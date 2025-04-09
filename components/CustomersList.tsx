@@ -140,8 +140,8 @@ const CustomersList = ({
                     keyExtractor={(item) => String(item.id)}
                 />
                 : showOnlyDay
-                    ? <Text style={styles.emptyList}>Please, add customer for {selectedDate} of {selectedMonth}.</Text>
-                    : <Text style={styles.emptyList}>Please, add customer.</Text>
+                    ? <Text style={styles.emptyList}>{localizationData[lang].PleaseAddCustomerFor({ selectedDate, selectedMonth })}</Text>
+                    : <Text style={styles.emptyList}>{localizationData[lang].PleaseAddCustomer}</Text>
             }
         </View>
     )

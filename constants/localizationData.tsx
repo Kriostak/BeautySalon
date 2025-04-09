@@ -1,4 +1,5 @@
-const UA = {
+
+const UA: any = {
     Salary: 'Зарплатня',
     Mh: 'Мш',
     L: 'Л',
@@ -36,10 +37,15 @@ const UA = {
     Laser: 'Лазер',
     IsNew: 'Новий',
     IsClosed: 'Закрився',
-    SubmitForm: 'Відправити Форму'
+    SubmitForm: 'Відправити Форму',
+    PleaseAddCustomer: 'Будь ласка, додайте клієнта.',
+    PleaseAddCustomerFor: (
+        { selectedDate, selectedMonth }:
+            { selectedDate: number, selectedMonth: keyof typeof UA }
+    ): string => (`Будь ласка, додайте клієнта на ${UA[selectedMonth]} ${selectedDate}.`)
 };
 
-const EN = {
+const EN: any = {
     Salary: 'Salary',
     Mh: 'Mh',
     L: 'L',
@@ -77,7 +83,12 @@ const EN = {
     Laser: 'Laser',
     IsNew: 'Is New',
     IsClosed: 'Is Closed',
-    SubmitForm: 'Submit Form'
+    SubmitForm: 'Submit Form',
+    PleaseAddCustomer: 'Please, add customer.',
+    PleaseAddCustomerFor: (
+        { selectedDate, selectedMonth }:
+            { selectedDate: number, selectedMonth: keyof typeof EN }
+    ): string => (`Please, add customer for ${selectedDate} of ${EN[selectedMonth]}.`)
 }
 
 const localizationData = {
