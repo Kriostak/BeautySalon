@@ -1,12 +1,12 @@
 import { Stack } from "expo-router";
-import { LangProvider } from "@/context/localizationContext";
+import StoreProvider from "@/context/StoreContext";
 
 export default function RootLayout() {
   return (
-    <LangProvider>
+    <StoreProvider>
       <Stack>
         <Stack.Screen name="index" options={{ headerShown: false }} />
       </Stack>
-    </LangProvider>
+    </StoreProvider>
   );
 }

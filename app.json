@@ -37,6 +37,15 @@
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "294fc7af-54d3-4c37-9463-b5874d4d9956"
+      }
+    },
+    "owner": "kriostak"
   }
 }

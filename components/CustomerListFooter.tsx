@@ -3,8 +3,8 @@ import Octicons from '@expo/vector-icons/Octicons';
 
 import { currencyFormat, getMultishapePercent } from "@/utils/utils";
 import { useContext } from "react";
-import { LangContext } from "@/context/localizationContext";
-import localizationData from "@/constants/localizationData";
+import { StoreContext } from "@/context/StoreContext";
+import useTranslate from "@/hooks/useTranslate";
 
 type Props = {
     showOnlyDay: boolean;
@@ -21,7 +21,8 @@ const CustomerListFooter = ({
     totalLSum,
     closedCustomersPercent
 }: Props): React.ReactElement => {
-    const { lang, localization, setLocalization } = useContext(LangContext);
+    const { store: { lang }, dispatch } = useContext(StoreContext);
+    const { t } = useTranslate();
 
     const laserPercent = 0.17;
     const salaryForLaser = totalLSum * laserPercent;
@@ -33,9 +34,9 @@ const CustomerListFooter = ({
         <View style={styles.customerListFooter}>
             <View style={styles.footerButtons}>
                 <Pressable
-                    onPress={() => setLocalization(!localization)}
+                    onPress={() => dispatch({ type: 'switchLocalization' })}
                     style={styles.footerButton}>
-                    <Text>{localization ? 'EN' : 'UA'}</Text>
+                    <Text>{lang === 'UA' ? 'EN' : 'UA'}</Text>
                 </Pressable>
                 {/* <Pressable style={styles.footerButton}>
                     <Octicons name={lightTheme ? 'moon' : 'sun'} size={20} />
@@ -43,7 +44,7 @@ const CustomerListFooter = ({
             </View>
 
             <View style={styles.salaryContainer}>
-                <Text style={styles.salaryText}>{localizationData[lang].Salary}</Text>
+                <Text style={styles.salaryText}>{t('Salary')}</Text>
                 <Text style={[styles.salaryText, styles.salaryValue]}>{currencyFormat(salary ?? 0)}</Text>
             </View>
 

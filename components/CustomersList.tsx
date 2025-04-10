@@ -2,10 +2,11 @@ import { useContext } from "react";
 import { View, Text, SectionList, Pressable, StyleSheet } from "react-native";
 import Octicons from '@expo/vector-icons/Octicons';
 
-import { customersSectionType, customerType, dayType } from "@/constants/types";
+import { customersSectionType, customerType } from "@/constants/types";
 import { removeCustomerFromList, currencyFormat } from "@/utils/utils";
-import { LangContext } from "@/context/localizationContext";
-import localizationData from "@/constants/localizationData";
+import useTranslate from "@/hooks/useTranslate";
+import { monthsList } from "@/constants/constants";
+
 
 type Props = {
     customersList: customersSectionType[] | [];
@@ -28,7 +29,7 @@ const CustomersList = ({
     selectedDate,
     showOnlyDay
 }: Props): React.ReactElement => {
-    const { lang } = useContext(LangContext);
+    const { t } = useTranslate();
 
     const removeCustomer = (
         { item, index, section }
@@ -95,7 +96,7 @@ const CustomersList = ({
                 <View style={styles.customerMain}>
                     <Text style={[styles.customerName, isClosed]}>{item.name}</Text>
                     <View style={styles.customerInfo}>
-                        <Text style={[styles.customerType, { color: isMh ? 'brown' : 'purple' }]}>{isMh ? localizationData[lang].Mh : localizationData[lang].L}</Text>
+                        <Text style={[styles.customerType, { color: isMh ? 'brown' : 'purple' }]}>{isMh ? t('Mh') : t('L')}</Text>
                         <Text style={[styles.customerPrice, { color: isMh ? 'brown' : 'purple' }]}>{currencyFormat(item.price)}</Text>
                     </View>
                 </View>
@@ -112,6 +113,8 @@ const CustomersList = ({
         ? customersList.filter(section => section.day === selectedDate)
         : customersList;
 
+    const monthNumber = monthsList.indexOf(selectedMonth) + 1;
+
     return (
         <View style={styles.container}>
             {filteredCustomersList?.length
@@ -120,12 +123,12 @@ const CustomersList = ({
                     renderSectionHeader={({ section }) => {
                         return (
                             <View style={styles.sectionHeader}>
-                                <Text style={styles.sectionText}>{`${(localizationData[lang] as Record<dayType, string>)[section.weekday]} ${section.day}`}</Text>
+                                <Text style={styles.sectionText}>{`${t(section.weekday)} ${section.day}`}</Text>
 
                                 <View style={styles.sectionSumContainer}>
                                     <View>
-                                        <Text style={[styles.sectionText, { textAlign: 'right', marginRight: 5 }]}>{localizationData[lang].Mh}:</Text>
-                                        <Text style={[styles.sectionText, { textAlign: 'right', marginRight: 5 }]}>{localizationData[lang].L}:</Text>
+                                        <Text style={[styles.sectionText, { textAlign: 'right', marginRight: 5 }]}>{t('Mh')}:</Text>
+                                        <Text style={[styles.sectionText, { textAlign: 'right', marginRight: 5 }]}>{t('L')}:</Text>
                                     </View>
                                     <View>
                                         <Text style={[styles.sectionText, { color: 'brown' }]}>{currencyFormat(section.mhSum)}</Text>
@@ -140,8 +143,12 @@ const CustomersList = ({
                     keyExtractor={(item) => String(item.id)}
                 />
                 : showOnlyDay
-                    ? <Text style={styles.emptyList}>{localizationData[lang].PleaseAddCustomerFor({ selectedDate, selectedMonth })}</Text>
-                    : <Text style={styles.emptyList}>{localizationData[lang].PleaseAddCustomer}</Text>
+                    ? <Text style={styles.emptyList}>{t(
+                        'Please, add customer for ${selectedDate}.${selectedMonth}.', {
+                        selectedDate,
+                        selectedMonth: monthNumber < 10 ? '0' + monthNumber : monthNumber
+                    })}</Text>
+                    : <Text style={styles.emptyList}>{t('Please add customer')}</Text>
             }
         </View>
     )

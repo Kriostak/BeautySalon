@@ -4,8 +4,7 @@ import Octicons from '@expo/vector-icons/Octicons';
 import { customerType, monthType } from "@/constants/types";
 
 import { currencyFormat } from "@/utils/utils";
-import { LangContext } from "@/context/localizationContext";
-import localizationData from "@/constants/localizationData";
+import useTranslate from "@/hooks/useTranslate";
 
 type Props = {
     setCalendarOpen: (isOpen: boolean) => void;
@@ -26,7 +25,7 @@ const CustomerListHeader = ({
     totalMhSum,
     totalLSum
 }: Props) => {
-    const { lang } = useContext(LangContext);
+    const { t } = useTranslate();
 
     return (
         <View style={styles.customersListHeader}>
@@ -37,15 +36,15 @@ const CustomerListHeader = ({
                     <Octicons name="calendar" size={20} />
                     <View>
                         <Text style={styles.backText}>{selectedYear}</Text>
-                        <Text style={styles.backText}>{(localizationData[lang] as Record<monthType, string>)[selectedMonth]}</Text>
+                        <Text style={styles.backText}>{t(selectedMonth)}</Text>
                     </View>
                 </View>
             </Pressable>
 
             <View style={styles.totalSum}>
                 <View style={styles.sumCol}>
-                    <Text style={styles.sumType}>{localizationData[lang].Mh}:</Text>
-                    <Text style={styles.sumType}>{localizationData[lang].L}:</Text>
+                    <Text style={styles.sumType}>{t('Mh')}:</Text>
+                    <Text style={styles.sumType}>{t('L')}:</Text>
                 </View>
                 <View style={styles.sumCol}>
                     <Text style={[styles.sumValue, { color: 'brown' }]}>{currencyFormat(totalMhSum ?? 0)}</Text>

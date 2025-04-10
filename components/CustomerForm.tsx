@@ -7,8 +7,7 @@ import Octicons from '@expo/vector-icons/Octicons';
 import { customersSectionType, customerType } from "@/constants/types";
 import { removeCustomerFromList, recalcSectionSum } from '@/utils/utils';
 import { weekDaysList, monthsList } from '@/constants/constants';
-import { LangContext } from "@/context/localizationContext";
-import localizationData from "@/constants/localizationData";
+import useTranslate from '@/hooks/useTranslate';
 
 type Props = {
     formOpen: boolean;
@@ -50,7 +49,7 @@ const CustomerForm = (
         isClosed: false,
         id: new Date().getTime(),
     }
-    const { lang } = useContext(LangContext);
+    const { t } = useTranslate();
     const [formElements, setFormElements] = useState(basicFormValues);
 
     useEffect(() => {
@@ -182,7 +181,7 @@ const CustomerForm = (
                         <Octicons name="x" size={24} />
                     </Pressable>
                 </View>
-                <Text style={styles.title}>{customer?.id ? localizationData[lang].EditCustomer : localizationData[lang].AddCustomer}</Text>
+                <Text style={styles.title}>{customer?.id ? t('Edit Customer') : t('Add Customer')}</Text>
                 <View>
                     <View style={styles.formItem}>
                         <TextInput
@@ -191,7 +190,7 @@ const CustomerForm = (
                                 ...old,
                                 name: val
                             }))}
-                            placeholder={localizationData[lang].CustomerName}
+                            placeholder={t('Customer Name')}
                             style={{
                                 borderColor: !isValid && formElements.name.trim().length < 3 ? 'rgba(255, 0, 0, .5)' : 'rgba(0, 0, 0, .5)',
                                 borderWidth: 1,
@@ -203,7 +202,7 @@ const CustomerForm = (
                     <View style={styles.formItem}>
                         <TextInput
                             inputMode='decimal'
-                            placeholder={localizationData[lang].Price}
+                            placeholder={t('Price')}
                             value={formElements.price === 0 ? '' : String(formElements.price)}
                             onChangeText={(val) => setFormElements(old => ({
                                 ...old,
@@ -219,7 +218,7 @@ const CustomerForm = (
 
                     <View style={styles.formItem}>
                         <SegmentedControl
-                            values={[localizationData[lang].Multishape, localizationData[lang].Laser]}
+                            values={[t('Multishape'), t('Laser')]}
                             selectedIndex={formElements.type}
                             onChange={(event) => {
                                 setFormElements(old => ({
@@ -241,7 +240,7 @@ const CustomerForm = (
                                 <Checkbox value={formElements.isNew} onValueChange={(val) => {
                                     toggleCheckbox({ val, key: 'isNew', isNewToggle: true });
                                 }} />
-                                <Text style={styles.checkboxText}>{localizationData[lang].IsNew}</Text>
+                                <Text style={styles.checkboxText}>{t('Is New')}</Text>
                             </View>
                         </Pressable>
                         <Pressable onPress={() => {
@@ -251,14 +250,14 @@ const CustomerForm = (
                                 <Checkbox value={formElements.isClosed} onValueChange={(val) => {
                                     toggleCheckbox({ val, key: 'isClosed', isNewToggle: false });
                                 }} disabled={!formElements.isNew} />
-                                <Text style={[styles.checkboxText, { opacity: formElements.isNew ? 1 : .5 }]}>{localizationData[lang].IsClosed}</Text>
+                                <Text style={[styles.checkboxText, { opacity: formElements.isNew ? 1 : .5 }]}>{t('Is Closed')}</Text>
                             </View>
                         </Pressable>
                     </View>
                 </View>
                 <View style={styles.submitContainer}>
                     <Pressable onPress={submitForm}>
-                        <Text style={styles.submit}>{localizationData[lang].SubmitForm}</Text>
+                        <Text style={styles.submit}>{t('Submit Form')}</Text>
                     </Pressable>
                 </View>
             </View>

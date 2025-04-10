@@ -6,8 +6,7 @@ import { monthsList, weekDaysList, shortWeekDaysList } from "@/constants/constan
 import { customersSectionType, monthType, shortDayType } from "@/constants/types";
 
 import { getStoreCustomersList } from "@/actions/actions";
-import { LangContext } from "@/context/localizationContext";
-import localizationData from "@/constants/localizationData";
+import useTranslate from "@/hooks/useTranslate";
 
 type Props = {
     calendarOpen: boolean,
@@ -33,7 +32,8 @@ const Calendar = ({
     const [calendarYear, setCalendarYear] = useState<number>(Number(selectedYear));
     const [calendarMonth, setCalendarMonth] = useState<number>(monthsList.indexOf(selectedMonth));
     const [calendarCustomersList, setCalendarCustomersList] = useState<customersSectionType[] | null>();
-    const { lang } = useContext(LangContext);
+
+    const { t } = useTranslate();
 
     useEffect(() => {
         getStoreCustomersList({
@@ -108,7 +108,7 @@ const Calendar = ({
                         }} style={styles.navigation}>
                             <Octicons name="chevron-left" size={24} />
                         </Pressable>
-                        <Text style={styles.headerText}>{(localizationData[lang] as Record<monthType, string>)[monthsList[calendarMonth]]}</Text>
+                        <Text style={styles.headerText}>{t(monthsList[calendarMonth])}</Text>
                         <Pressable onPress={() => {
                             calendarMonthNavigation(true);
                         }} style={styles.navigation}>
@@ -120,7 +120,7 @@ const Calendar = ({
                 <View style={styles.calendarWeekdays}>
                     {shortWeekDaysList.map((shortWeekday, index) => (
                         <Text style={[styles.cellWidth, styles.textCenter]} key={index}>
-                            {(localizationData[lang] as Record<shortDayType, string>)[shortWeekday]}
+                            {t(shortWeekday)}
                         </Text>
                     ))}
                 </View>
