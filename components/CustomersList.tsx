@@ -71,40 +71,42 @@ const CustomersList = ({
             }
     ): React.ReactElement => {
         const isMh = item.type === 0;
-        const isClosed = item.isNew ?
+        const isClosedStyles = item.isNew ?
             item.isClosed ? {
-                color: 'rgba(6, 182, 0, 0.75)',
-                textShadowColor: 'rgba(6, 182, 0, 0.75)',
-                textShadowOffset: { width: -1, height: 1 },
-                textShadowRadius: 10
+                backgroundColor: 'rgba(6, 182, 0, 0.35)',
             } : {
-                color: 'rgba(177, 0, 0, 0.75)',
-                textShadowColor: 'rgba(177, 0, 0, 0.75)',
-                textShadowOffset: { width: -1, height: 1 },
-                textShadowRadius: 10
+                backgroundColor: 'rgba(177, 0, 0, 0.35)',
             }
             : {};
 
         return (
-            <View style={styles.customerContainer}>
-                <Pressable onPress={() => {
-                    setCustomer(item);
-                    setFormOpen(true);
-                }}>
-                    <Octicons name="pencil" size={20} style={[styles.customerButton, { backgroundColor: 'lightgreen' }]} />
-                </Pressable>
+            <View style={[styles.customerContainer, isClosedStyles]}>
+                <Text style={styles.customerName}>{item.name}</Text>
                 <View style={styles.customerMain}>
-                    <Text style={[styles.customerName, isClosed]}>{item.name}</Text>
+                    <Pressable onPress={() => {
+                        setCustomer(item);
+                        setFormOpen(true);
+                    }}>
+                        <Octicons name="pencil" size={20} style={[styles.customerButton, { backgroundColor: 'lightgreen' }]} />
+                    </Pressable>
+
+
                     <View style={styles.customerInfo}>
-                        <Text style={[styles.customerType, { color: isMh ? 'brown' : 'purple' }]}>{isMh ? t('Mh') : t('L')}</Text>
-                        <Text style={[styles.customerPrice, { color: isMh ? 'brown' : 'purple' }]}>{currencyFormat(item.price)}</Text>
+                        <Text style={styles.customerType}>{isMh ? t('Mh') : t('L')}</Text>
+                        <Pressable onPress={() => {
+
+                        }}>
+                            <Text numberOfLines={1} ellipsizeMode="tail" style={{ width: 100 }}>{item.transferredComment}</Text>
+                        </Pressable>
+                        <Text style={styles.customerPrice}>{currencyFormat(item.price)}</Text>
                     </View>
+
+                    <Pressable onPress={() => {
+                        removeCustomer({ item, index, section });
+                    }}>
+                        <Octicons name="trash" size={20} style={[styles.customerButton, { backgroundColor: 'red' }]} />
+                    </Pressable>
                 </View>
-                <Pressable onPress={() => {
-                    removeCustomer({ item, index, section });
-                }}>
-                    <Octicons name="trash" size={20} style={[styles.customerButton, { backgroundColor: 'red' }]} />
-                </Pressable>
             </View>
         )
     }
@@ -123,16 +125,39 @@ const CustomersList = ({
                     renderSectionHeader={({ section }) => {
                         return (
                             <View style={styles.sectionHeader}>
-                                <Text style={styles.sectionText}>{`${t(section.weekday)} ${section.day}`}</Text>
-
-                                <View style={styles.sectionSumContainer}>
-                                    <View>
-                                        <Text style={[styles.sectionText, { textAlign: 'right', marginRight: 5 }]}>{t('Mh')}:</Text>
-                                        <Text style={[styles.sectionText, { textAlign: 'right', marginRight: 5 }]}>{t('L')}:</Text>
+                                <Text style={[styles.sectionText, { fontSize: 16 }]}>{`${t(section.weekday)} ${section.day}`}</Text>
+                                <View style={styles.sectionInfo}>
+                                    <View style={styles.sectionSumContainer}>
+                                        <View>
+                                            <Text style={[styles.sectionText, { textAlign: 'left', marginRight: 5 }]}>{t('Nw')}:</Text>
+                                            <Text style={[styles.sectionText, { textAlign: 'left', marginRight: 5 }]}>{t('Cl')}:</Text>
+                                        </View>
+                                        <View>
+                                            <Text style={[styles.sectionText]}>{section.isNewCount}</Text>
+                                            <Text style={[styles.sectionText]}>{section.isClosedCount}</Text>
+                                        </View>
                                     </View>
-                                    <View>
-                                        <Text style={[styles.sectionText, { color: 'brown' }]}>{currencyFormat(section.mhSum)}</Text>
-                                        <Text style={[styles.sectionText, { color: 'purple' }]}>{currencyFormat(section.lSum)}</Text>
+
+                                    <View style={styles.sectionSumContainer}>
+                                        <View>
+                                            <Text style={[styles.sectionText, { textAlign: 'right', marginRight: 5 }]}>{t('Mh')}:</Text>
+                                            <Text style={[styles.sectionText, { textAlign: 'right', marginRight: 5 }]}>{t('L')}:</Text>
+                                        </View>
+                                        <View>
+                                            <Text style={[styles.sectionText, { color: 'brown' }]}>{currencyFormat(section.mhSum)}</Text>
+                                            <Text style={[styles.sectionText, { color: 'purple' }]}>{currencyFormat(section.lSum)}</Text>
+                                        </View>
+                                    </View>
+
+                                    <View style={styles.sectionSumContainer}>
+                                        <View>
+                                            <Text style={[styles.sectionText, { textAlign: 'right', marginRight: 5 }]}>{t('Cr')}:</Text>
+                                            <Text style={[styles.sectionText, { textAlign: 'right', marginRight: 5 }]}>{t('Tr')}:</Text>
+                                        </View>
+                                        <View>
+                                            <Text style={[styles.sectionText]}>{section.creamsSold}</Text>
+                                            <Text style={[styles.sectionText]}>{section.transferredCount}</Text>
+                                        </View>
                                     </View>
                                 </View>
                             </View>
@@ -167,39 +192,44 @@ const styles = StyleSheet.create({
         marginHorizontal: 'auto'
     },
     sectionHeader: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
         alignItems: 'center',
         paddingVertical: 10,
-        paddingHorizontal: 15,
+        paddingHorizontal: 10,
         borderBottomWidth: 1,
-        backgroundColor: 'white'
+        backgroundColor: 'white',
+    },
+    sectionInfo: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'flex-start',
+        width: '100%'
     },
     sectionSumContainer: {
         flexDirection: 'row'
     },
     sectionText: {
         fontWeight: 500,
-        fontSize: 16,
+        fontSize: 14,
     },
-
     customerContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'flex-end',
+        alignItems: 'center',
         paddingHorizontal: 15,
         paddingVertical: 10,
         borderBottomWidth: 1,
         borderStyle: 'dashed',
+        flex: 1,
     },
     customerMain: {
         flex: 1,
-        paddingHorizontal: 10,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center'
     },
     customerInfo: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-
+        flex: 1,
+        paddingHorizontal: 7
     },
     customerName: {
         textAlign: 'center',

@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect } from 'react';
 import { Modal, View, TextInput, Text, Pressable, StyleSheet } from "react-native";
 import Checkbox from 'expo-checkbox';
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
@@ -33,7 +33,7 @@ const CustomerForm = (
         selectedMonth,
         selectedDate
     }: Props): React.ReactElement => {
-    const basicFormValues = {
+    const basicFormValues: customerType = {
         day: selectedDate,
         weekday: weekDaysList[
             new Date(
@@ -47,10 +47,13 @@ const CustomerForm = (
         type: 0,
         isNew: false,
         isClosed: false,
+        isTransferred: false,
+        transferredComment: '',
+        creamPrice: 0,
         id: new Date().getTime(),
     }
     const { t } = useTranslate();
-    const [formElements, setFormElements] = useState(basicFormValues);
+    const [formElements, setFormElements] = useState<typeof basicFormValues>(basicFormValues);
 
     useEffect(() => {
         setFormElements(customer ?? basicFormValues);
@@ -61,14 +64,19 @@ const CustomerForm = (
     const submitForm = () => {
         const formValid = formElements.day !== 0
             && !!formElements.weekday
-            && formElements.name.trim().length > 0
-            && Number(formElements.price) > 0;
+            && formElements.name.trim().length > 0;
 
         setIsValid(formValid);
 
         if (!formValid) return;
 
         const isMh = formElements.type === 0;
+
+        // durring submit remove 'transferred comment' if transferred checkbox is unchecked
+        // it prevent to saving data what will be not visible to user
+        formElements.transferredComment =
+            formElements.isTransferred
+                ? formElements.transferredComment : '';
 
         // customers list empty. Just adding first customer and it first section in list
         if (!customersList) {
@@ -77,6 +85,10 @@ const CustomerForm = (
                 day: formElements.day,
                 mhSum: isMh ? formElements.price : 0,
                 lSum: !isMh ? formElements.price : 0,
+                isNewCount: formElements.isNew ? 1 : 0,
+                isClosedCount: formElements.isClosed ? 1 : 0,
+                transferredCount: formElements.isTransferred ? 1 : 0,
+                creamsSold: formElements.creamPrice > 0 ? 1 : 0,
                 data: [
                     formElements
                 ]
@@ -94,6 +106,10 @@ const CustomerForm = (
                     day: formElements.day,
                     mhSum: isMh ? formElements.price : 0,
                     lSum: !isMh ? formElements.price : 0,
+                    isNewCount: formElements.isNew ? 1 : 0,
+                    isClosedCount: formElements.isClosed ? 1 : 0,
+                    transferredCount: formElements.isTransferred ? 1 : 0,
+                    creamsSold: formElements.creamPrice > 0 ? 1 : 0,
                     data: [
                         formElements
                     ]
@@ -158,11 +174,12 @@ const CustomerForm = (
         setFormOpen(false);
     }
 
-    const toggleCheckbox = ({ val, key, isNewToggle }: { val: boolean, key: string, isNewToggle: boolean }) => {
+    const toggleCheckbox = ({ val, key, isNewToggle }: { val: boolean, key: string, isNewToggle?: boolean }) => {
         setFormElements(old => ({
             ...old,
-            [key]: val //!formElements.isNew
+            [key]: val
         }))
+        // only for isClosed checkbox. It related to isNew
         if (isNewToggle && !val) {
             setFormElements(old => ({
                 ...old,
@@ -191,11 +208,9 @@ const CustomerForm = (
                                 name: val
                             }))}
                             placeholder={t('Customer Name')}
-                            style={{
+                            style={[styles.textInput, {
                                 borderColor: !isValid && formElements.name.trim().length < 3 ? 'rgba(255, 0, 0, .5)' : 'rgba(0, 0, 0, .5)',
-                                borderWidth: 1,
-                                borderRadius: 5,
-                            }}
+                            }]}
                         />
                     </View>
 
@@ -208,11 +223,7 @@ const CustomerForm = (
                                 ...old,
                                 price: Number(val)
                             }))}
-                            style={{
-                                borderColor: !isValid && formElements.name.trim().length < 3 ? 'rgba(255, 0, 0, .5)' : 'rgba(0, 0, 0, .5)',
-                                borderWidth: 1,
-                                borderRadius: 5,
-                            }}
+                            style={styles.textInput}
                         />
                     </View>
 
@@ -243,17 +254,56 @@ const CustomerForm = (
                                 <Text style={styles.checkboxText}>{t('Is New')}</Text>
                             </View>
                         </Pressable>
+
                         <Pressable onPress={() => {
-                            formElements.isNew && toggleCheckbox({ val: !formElements.isClosed, key: 'isClosed', isNewToggle: false });
+                            formElements.isNew && toggleCheckbox({ val: !formElements.isClosed, key: 'isClosed' });
                         }}>
                             <View style={styles.checkboxWrapper}>
                                 <Checkbox value={formElements.isClosed} onValueChange={(val) => {
-                                    toggleCheckbox({ val, key: 'isClosed', isNewToggle: false });
+                                    toggleCheckbox({ val, key: 'isClosed' });
                                 }} disabled={!formElements.isNew} />
                                 <Text style={[styles.checkboxText, { opacity: formElements.isNew ? 1 : .5 }]}>{t('Is Closed')}</Text>
                             </View>
                         </Pressable>
                     </View>
+
+                    <View style={styles.formItem}>
+                        <Pressable onPress={() => {
+                            toggleCheckbox({ val: !formElements.isTransferred, key: 'isTransferred' });
+                        }}>
+                            <View style={styles.checkboxWrapper}>
+                                <Checkbox value={formElements.isTransferred} onValueChange={(val) => {
+                                    toggleCheckbox({ val, key: 'isTransferred' });
+                                }} />
+                                <Text style={styles.checkboxText}>{t('Is Transferred')}</Text>
+                            </View>
+                        </Pressable>
+                        {formElements.isTransferred && <TextInput
+                            multiline
+                            numberOfLines={4}
+                            maxLength={255}
+                            onChangeText={(val) => setFormElements(old => ({
+                                ...old,
+                                transferredComment: val
+                            }))}
+                            value={formElements.transferredComment}
+                            style={styles.textInput}
+                        />}
+                    </View>
+
+                    <View style={styles.formItem}>
+                        <TextInput
+                            inputMode='decimal'
+                            placeholder={t('Cream Price')}
+                            value={formElements.price === 0 ? '' : String(formElements.creamPrice)}
+                            onChangeText={(val) => setFormElements(old => ({
+                                ...old,
+                                creamPrice: Number(val)
+                            }))}
+                            style={styles.textInput}
+                        />
+                    </View>
+
                 </View>
                 <View style={styles.submitContainer}>
                     <Pressable onPress={submitForm}>
@@ -302,6 +352,13 @@ const styles = StyleSheet.create({
     },
     formItem: {
         paddingVertical: 15
+    },
+    textInput: {
+        paddingVertical: 5,
+        paddingHorizontal: 5,
+        borderWidth: 1,
+        borderRadius: 5,
+        borderColor: 'rgba(0,0,0, .5)'
     },
     checkboxWrapper: {
         flexDirection: 'row',

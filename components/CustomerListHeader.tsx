@@ -1,4 +1,3 @@
-import { useContext } from "react";
 import { View, StyleSheet, Pressable, Text } from "react-native";
 import Octicons from '@expo/vector-icons/Octicons';
 import { customerType, monthType } from "@/constants/types";
@@ -12,6 +11,7 @@ type Props = {
     selectedMonth: monthType;
     setCustomer: (customer?: customerType) => void;
     setFormOpen: (isOpen: boolean) => void;
+    setSalaryListOpen: (isOpen: boolean) => void;
     totalMhSum: number;
     totalLSum: number;
 };
@@ -22,8 +22,10 @@ const CustomerListHeader = ({
     selectedMonth,
     setCustomer,
     setFormOpen,
+    setSalaryListOpen,
     totalMhSum,
-    totalLSum
+    totalLSum,
+
 }: Props) => {
     const { t } = useTranslate();
 
@@ -32,32 +34,29 @@ const CustomerListHeader = ({
             <Pressable onPress={() => {
                 setCalendarOpen(true);
             }}>
-                <View style={styles.backLink}>
-                    <Octicons name="calendar" size={20} />
-                    <View>
-                        <Text style={styles.backText}>{selectedYear}</Text>
-                        <Text style={styles.backText}>{t(selectedMonth)}</Text>
-                    </View>
-                </View>
+                <Octicons name="calendar" size={20} style={styles.button} />
             </Pressable>
 
-            <View style={styles.totalSum}>
-                <View style={styles.sumCol}>
-                    <Text style={styles.sumType}>{t('Mh')}:</Text>
-                    <Text style={styles.sumType}>{t('L')}:</Text>
-                </View>
-                <View style={styles.sumCol}>
-                    <Text style={[styles.sumValue, { color: 'brown' }]}>{currencyFormat(totalMhSum ?? 0)}</Text>
-                    <Text style={[styles.sumValue, { color: 'purple' }]}>{currencyFormat(totalLSum ?? 0)}</Text>
-                </View>
+            <View style={{
+                marginRight: -35
+            }}>
+                <Text style={styles.backText}>{selectedYear}</Text>
+                <Text style={styles.backText}>{t(selectedMonth)}</Text>
             </View>
 
-            <Pressable onPress={() => {
-                setCustomer(undefined);
-                setFormOpen(true);
-            }}>
-                <Octicons name="person-add" size={20} style={styles.addCustomerButton} />
-            </Pressable>
+            <View style={styles.buttonContainer}>
+                <Pressable onPress={() => {
+                    setCustomer(undefined);
+                    setFormOpen(true);
+                }}>
+                    <Octicons name="person-add" size={20} style={styles.button} />
+                </Pressable>
+                <Pressable onPress={() => {
+                    setSalaryListOpen(true);
+                }}>
+                    <Octicons name="checklist" size={20} style={styles.button} />
+                </Pressable>
+            </View>
         </View>
     );
 }
@@ -71,10 +70,6 @@ const styles = StyleSheet.create({
         paddingVertical: 10,
         borderBottomWidth: 1,
         backgroundColor: 'lightgray'
-    },
-    backLink: {
-        flexDirection: 'row',
-        alignItems: 'center',
     },
     backText: {
         paddingLeft: 5,
@@ -100,7 +95,12 @@ const styles = StyleSheet.create({
         fontWeight: 500,
         fontSize: 16
     },
-    addCustomerButton: {
+    buttonContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 10,
+    },
+    button: {
         borderWidth: 1,
         borderRadius: 5,
         borderColor: 'black',
@@ -108,7 +108,6 @@ const styles = StyleSheet.create({
         paddingLeft: 8,
         paddingRight: 6,
         paddingBottom: 5,
-        backgroundColor: 'lightblue'
     }
 });
 

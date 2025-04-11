@@ -7,7 +7,7 @@ const useTranslate = () => {
     const { store: { lang } } = useContext(StoreContext);
 
     const t = (text: string, params?: Record<string, string | number>) => {
-        let translateString = localizationData?.[lang]?.[text] ?? '';
+        let translateString = localizationData?.[lang]?.[text] ?? text;
 
         params && Object.keys(params).forEach(key => {
             translateString = translateString.replace(`$\{${key}}`, String(params[key]));

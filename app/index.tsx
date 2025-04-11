@@ -15,7 +15,8 @@ import CustomersList from "@/components/CustomersList";
 import CustomerListFooter from "@/components/CustomerListFooter";
 import CustomerForm from "@/components/CustomerForm";
 import Calendar from "@/components/Calendar";
-import { getClosedCustomersPercent } from "@/utils/utils";
+import { getSalary } from "@/utils/utils";
+import SalaryList from "@/components/SalaryList";
 
 
 export default function Index() {
@@ -27,6 +28,7 @@ export default function Index() {
   const [customer, setCustomer] = useState<customerType | undefined>();
   const [calendarOpen, setCalendarOpen] = useState<boolean>(false);
   const [showOnlyDay, setShowOnlyDay] = useState<boolean>(true);
+  const [salaryListOpen, setSalaryListOpen] = useState<boolean>(false);
 
   useEffect(() => {
     getStoreCustomersList({ selectedYear, selectedMonth }).then(customersListResponse => {
@@ -37,7 +39,11 @@ export default function Index() {
   const totalMhSum = customersList?.reduce((partialSum, section) => partialSum + section.mhSum, 0);
   const totalLSum = customersList?.reduce((partialSum, section) => partialSum + section.lSum, 0);
 
-  const closedCustomersPercent = getClosedCustomersPercent(customersList ?? []);
+  const salaryObject = getSalary({
+    customersList: customersList ?? [],
+    totalMhSum: totalMhSum ?? 0,
+    totalLSum: totalLSum ?? 0
+  });
 
   const setStoreCustomersList = (newCustomersList: customersSectionType[]) => {
     setStoreData({ dataKey: `${selectedYear}:${selectedMonth}`, dataValue: newCustomersList })
@@ -51,6 +57,7 @@ export default function Index() {
         selectedYear={selectedYear}
         selectedMonth={selectedMonth}
         setCustomer={setCustomer}
+        setSalaryListOpen={setSalaryListOpen}
         setFormOpen={setFormOpen}
         totalMhSum={totalMhSum ?? 0}
         totalLSum={totalLSum ?? 0}
@@ -89,12 +96,18 @@ export default function Index() {
         selectedDate={selectedDate}
         setSelectedDate={setSelectedDate}
       />
+
+      <SalaryList
+        salaryObject={salaryObject}
+        salaryListOpen={salaryListOpen}
+        setSalaryListOpen={setSalaryListOpen}
+        totalMhSum={totalMhSum ?? 0}
+        totalLSum={totalLSum ?? 0}
+      />
+
       <CustomerListFooter
         showOnlyDay={showOnlyDay}
         setShowOnlyDay={setShowOnlyDay}
-        totalMhSum={totalMhSum ?? 0}
-        totalLSum={totalLSum ?? 0}
-        closedCustomersPercent={closedCustomersPercent}
       />
     </SafeAreaView >
   );

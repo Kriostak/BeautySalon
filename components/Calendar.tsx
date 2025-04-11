@@ -236,7 +236,7 @@ const styles = StyleSheet.create({
         borderTopWidth: 1
     },
     cellWidth: {
-        width: `${(100 / 7)}%`,
+        width: `${(100 / 7.15)}%`,
     },
     textCenter: {
         textAlign: 'center'

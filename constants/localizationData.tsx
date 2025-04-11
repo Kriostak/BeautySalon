@@ -39,7 +39,21 @@ const UA: any = {
     'Is Closed': 'Закрився',
     'Submit Form': 'Відправити Форму',
     'Please add customer': 'Будь ласка, додайте клієнта.',
-    'Please, add customer for ${selectedDate}.${selectedMonth}.': 'Будь ласка, додайте клієнта на ${selectedDate}.${selectedMonth}.'
+    'Please, add customer for ${selectedDate}.${selectedMonth}.': 'Будь ласка, додайте клієнта на ${selectedDate}.${selectedMonth}.',
+    'Is Transferred': 'Переведена',
+    'Salary for Laser': 'Зарплатня за Лазер',
+    'Salary for Multishape': 'Зарплатня за Мультішейп',
+    'Newcomers': 'Новенькі',
+    'Closed Newcomers': 'Закриті Новенькі',
+    'Transferred customers': 'Кількість Переведених',
+    'Salary for Transfers': 'Зарплатня за Переведених',
+    'Cream Price': 'Ціна за крем',
+    'Creams sold': 'Продано крему',
+    'Salary for Cream': 'Зарплатня за крем',
+    'Nw': 'Н',
+    'Cl': 'Зк',
+    'Cr': 'Кр',
+    'Tr': 'Пе'
 };
 
 const EN: any = {
@@ -82,7 +96,21 @@ const EN: any = {
     'Is Closed': 'Is Closed',
     'Submit Form': 'Submit Form',
     'Please add customer': 'Please, add customer.',
-    'Please, add customer for ${selectedDate}.${selectedMonth}.': 'Please, add customer for ${selectedDate}.${selectedMonth}.'
+    'Please, add customer for ${selectedDate}.${selectedMonth}.': 'Please, add customer for ${selectedDate}.${selectedMonth}.',
+    'Is Transferred': 'Is Transferred',
+    'Salary for Laser': 'Salary for Laser',
+    'Salary for Multishape': 'Salary for Multishape',
+    'Newcomers': 'Newcomers',
+    'Closed Newcomers': 'Closed Newcomers',
+    'Transferred customers': 'Transferred customers',
+    'Salary for Transfers': 'Salary for Transfers',
+    'Cream Price': 'Cream Price',
+    'Creams sold': 'Creams sold',
+    'Salary for Cream': 'Salary for Cream',
+    'Nw': 'Nw',
+    'Cl': 'Cl',
+    'Cr': 'Cr',
+    'Tr': 'Tr'
 }
 
 const localizationData: Record<'UA' | 'EN', any> = {

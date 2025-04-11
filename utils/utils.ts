@@ -1,4 +1,5 @@
-import { customersSectionType } from "@/constants/types";
+import { customersSectionType, salaryObjectType } from "@/constants/types";
+import { CREAM_PERCENT, LASER_PERCENT, TRANSFERRED_PERCENT } from "@/constants/constants";
 
 // it mutate list what you pass
 export const removeCustomerFromList = ({
@@ -20,15 +21,37 @@ export const removeCustomerFromList = ({
 export const recalcSectionSum = (sectionObj: customersSectionType) => {
     let newMhSum = 0;
     let newLSum = 0;
+    let isNewCount = 0;
+    let isClosedCount = 0;
+    let transferredCount = 0;
+    let creamsSold = 0;
+
     sectionObj.data.forEach(customerItem => {
         if (customerItem.type === 0) {
             newMhSum += customerItem.price;
         } else {
             newLSum += customerItem.price;
         }
+        if (customerItem.isNew) {
+            isNewCount++;
+        }
+        if (customerItem.isClosed) {
+            isClosedCount++;
+        }
+        if (customerItem.isTransferred) {
+            transferredCount++;
+        }
+        if (customerItem.creamPrice > 0) {
+            creamsSold++;
+        }
     });
+
     sectionObj.mhSum = newMhSum;
     sectionObj.lSum = newLSum;
+    sectionObj.isNewCount = isNewCount;
+    sectionObj.isClosedCount = isClosedCount;
+    sectionObj.transferredCount = transferredCount;
+    sectionObj.creamsSold = creamsSold;
 }
 
 export const currencyFormat = (num: number): string => {
@@ -55,11 +78,22 @@ export const getMultishapePercent = (closedCustomersPercent: number): number => 
     return .15;
 }
 
-export const getClosedCustomersPercent = (customerList: customersSectionType[]): number => {
+export const getSalary = ({
+    customersList,
+    totalMhSum,
+    totalLSum
+}: {
+    customersList: customersSectionType[],
+    totalMhSum: number,
+    totalLSum: number,
+}): salaryObjectType => {
     let isNewCount = 0;
     let isClosedCount = 0;
+    let isTransferredCount = 0;
+    let creamCount = 0;
+    let creamSum = 0;
 
-    customerList.forEach((section) => {
+    customersList.forEach((section) => {
         section.data.forEach(customer => {
             if (customer.isNew) {
                 isNewCount++;
@@ -67,8 +101,34 @@ export const getClosedCustomersPercent = (customerList: customersSectionType[]):
             if (customer.isNew && customer.isClosed) {
                 isClosedCount++;
             }
+            if (customer.isTransferred) {
+                isTransferredCount++;
+            }
+            if (customer.creamPrice !== 0) {
+                creamCount++;
+                creamSum += customer.creamPrice;
+            }
         });
     });
 
-    return isNewCount ? (isClosedCount / isNewCount) * 100 : 0;
+    const multishapePercentage = isNewCount ? (isClosedCount / isNewCount) * 100 : 0;
+
+    const laserSalary = totalLSum * LASER_PERCENT;
+    const multishapeSalary = totalMhSum * multishapePercentage;
+    const transferredSalary = isTransferredCount * TRANSFERRED_PERCENT;
+    const creamSalary = creamSum * CREAM_PERCENT;
+
+    const totalSalary = laserSalary + multishapeSalary + transferredSalary;
+
+    return {
+        laserSalary,
+        isNewCount,
+        isClosedCount,
+        multishapeSalary,
+        isTransferredCount,
+        transferredSalary,
+        creamCount,
+        creamSalary,
+        totalSalary
+    };
 }

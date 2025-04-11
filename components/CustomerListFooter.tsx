@@ -1,34 +1,19 @@
 import { View, StyleSheet, Pressable, Text } from "react-native";
 import Octicons from '@expo/vector-icons/Octicons';
 
-import { currencyFormat, getMultishapePercent } from "@/utils/utils";
 import { useContext } from "react";
 import { StoreContext } from "@/context/StoreContext";
-import useTranslate from "@/hooks/useTranslate";
 
 type Props = {
     showOnlyDay: boolean;
     setShowOnlyDay: (showOnlySelectedDay: boolean) => void;
-    totalMhSum: number;
-    totalLSum: number;
-    closedCustomersPercent: number;
 };
 
 const CustomerListFooter = ({
     showOnlyDay,
     setShowOnlyDay,
-    totalMhSum,
-    totalLSum,
-    closedCustomersPercent
 }: Props): React.ReactElement => {
     const { store: { lang }, dispatch } = useContext(StoreContext);
-    const { t } = useTranslate();
-
-    const laserPercent = 0.17;
-    const salaryForLaser = totalLSum * laserPercent;
-    const multishapePercent = getMultishapePercent(closedCustomersPercent);
-    const salaryForMultishape = totalMhSum * multishapePercent;
-    const salary = salaryForLaser + salaryForMultishape;
 
     return (
         <View style={styles.customerListFooter}>
@@ -41,11 +26,6 @@ const CustomerListFooter = ({
                 {/* <Pressable style={styles.footerButton}>
                     <Octicons name={lightTheme ? 'moon' : 'sun'} size={20} />
                 </Pressable> */}
-            </View>
-
-            <View style={styles.salaryContainer}>
-                <Text style={styles.salaryText}>{t('Salary')}</Text>
-                <Text style={[styles.salaryText, styles.salaryValue]}>{currencyFormat(salary ?? 0)}</Text>
             </View>
 
             <Pressable

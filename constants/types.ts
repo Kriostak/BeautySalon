@@ -20,6 +20,9 @@ export type customerType = {
     type: number; // 0 - massage, 1 - multishape
     isNew: boolean;
     isClosed: boolean;
+    isTransferred: boolean;
+    transferredComment: string;
+    creamPrice: number;
     day: number;
     weekday: dayType;
 }
@@ -29,5 +32,21 @@ export type customersSectionType = {
     day: number;
     mhSum: number;
     lSum: number;
+    isNewCount: number;
+    isClosedCount: number;
+    transferredCount: number;
+    creamsSold: number;
     data: customerType[];
+}
+
+export type salaryObjectType = {
+    laserSalary: number,
+    multishapeSalary: number,
+    isNewCount: number,
+    isClosedCount: number,
+    isTransferredCount: number,
+    transferredSalary: number,
+    creamCount: number,
+    creamSalary: number,
+    totalSalary: number
 }
