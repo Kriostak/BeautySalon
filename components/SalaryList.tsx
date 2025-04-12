@@ -1,26 +1,24 @@
 import { Modal, View, Pressable, StyleSheet, Text } from "react-native"
 import Octicons from '@expo/vector-icons/Octicons';
 
-import { salaryObjectType } from "@/constants/types"
+import { salaryObjectType, themeStylesType } from "@/constants/types"
 import useTranslate from "@/hooks/useTranslate";
 import { currencyFormat } from "@/utils/utils";
+import useTheme from "@/hooks/useTheme";
 
 type Props = {
     salaryObject: salaryObjectType,
     salaryListOpen: boolean,
     setSalaryListOpen: (isOpen: boolean) => void,
-    totalLSum: number,
-    totalMhSum: number,
 }
 
 const SalaryList = ({
     salaryObject,
     salaryListOpen,
     setSalaryListOpen,
-    totalLSum,
-    totalMhSum
 }: Props) => {
     const { t } = useTranslate();
+    const { themeStyles } = useTheme();
 
     const salaryListOrder:
         Record<keyof typeof salaryObject, { text: string; isCurrency: boolean }>
@@ -63,6 +61,8 @@ const SalaryList = ({
         }
     }
 
+    const styles = salaryListStyles(themeStyles);
+
     return (
         <Modal animationType="slide" transparent={true} visible={salaryListOpen}>
             <View style={styles.container}>
@@ -70,7 +70,7 @@ const SalaryList = ({
                     <Pressable onPress={() => {
                         setSalaryListOpen(false);
                     }}>
-                        <Octicons name="x" size={24} />
+                        <Octicons name="x" size={24} style={{ color: themeStyles.color }} />
                     </Pressable>
                 </View>
                 {Object.entries(salaryListOrder).map(([key, rules]) => {
@@ -97,11 +97,11 @@ const SalaryList = ({
     );
 }
 
-const styles = StyleSheet.create({
+const salaryListStyles = (themeStyles: themeStylesType) => StyleSheet.create({
     container: {
         width: '90%',
         maxWidth: 1000,
-        backgroundColor: 'white',
+        backgroundColor: themeStyles.backgroundModal,
         borderRadius: 18,
         position: 'absolute',
         top: '50%',
@@ -118,7 +118,7 @@ const styles = StyleSheet.create({
         shadowRadius: 9.11,
         elevation: 14,
         borderWidth: 1,
-        borderColor: 'rgba(0, 0, 0, .25)',
+        borderColor: themeStyles.border,
         gap: 10
     },
     closeIcon: {
@@ -130,9 +130,11 @@ const styles = StyleSheet.create({
     salaryRow: {
         alignItems: 'center',
         borderStyle: 'dashed',
+        borderColor: themeStyles.border
     },
     salaryText: {
-        fontSize: 16
+        fontSize: 16,
+        color: themeStyles.color
     }
 });
 

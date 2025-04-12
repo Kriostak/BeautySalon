@@ -2,6 +2,7 @@ import { Context, createContext, useReducer } from "react";
 
 const initialValues = {
     lang: 'UA' as 'UA' | 'EN',
+    theme: 'light' as 'light' | 'dark',
 };
 
 type dispatchActionType = Record<string, string | number | boolean>;
@@ -28,6 +29,12 @@ const StoreProvider = ({ children }: { children: React.ReactElement }): React.Re
                 return {
                     ...store,
                     lang: store.lang === 'UA' ? 'EN' : 'UA'
+                }
+            }
+            case 'switchTheme': {
+                return {
+                    ...store,
+                    theme: store.theme === 'light' ? 'dark' : 'light'
                 }
             }
             default: {

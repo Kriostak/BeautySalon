@@ -1,12 +1,13 @@
-import { useState, useEffect, useMemo, useContext } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Modal, View, StyleSheet, Text, Pressable } from "react-native";
 import Octicons from '@expo/vector-icons/Octicons';
 
 import { monthsList, weekDaysList, shortWeekDaysList } from "@/constants/constants";
-import { customersSectionType, monthType, shortDayType } from "@/constants/types";
+import { customersSectionType, monthType, themeStylesType } from "@/constants/types";
 
 import { getStoreCustomersList } from "@/actions/actions";
 import useTranslate from "@/hooks/useTranslate";
+import useTheme from "@/hooks/useTheme";
 
 type Props = {
     calendarOpen: boolean,
@@ -29,11 +30,12 @@ const Calendar = ({
     selectedDate,
     setSelectedDate
 }: Props): React.ReactElement => {
+    const { t } = useTranslate();
+    const { themeStyles } = useTheme();
+
     const [calendarYear, setCalendarYear] = useState<number>(Number(selectedYear));
     const [calendarMonth, setCalendarMonth] = useState<number>(monthsList.indexOf(selectedMonth));
     const [calendarCustomersList, setCalendarCustomersList] = useState<customersSectionType[] | null>();
-
-    const { t } = useTranslate();
 
     useEffect(() => {
         getStoreCustomersList({
@@ -77,6 +79,8 @@ const Calendar = ({
         return calendarCustomersList?.map(day => day.day);
     }, [calendarCustomersList]);
 
+    const styles = calendarStyles(themeStyles);
+
     return (
         <Modal animationType="slide" transparent={true} visible={calendarOpen}>
             <View style={styles.calendarContainer}>
@@ -84,7 +88,7 @@ const Calendar = ({
                     <Pressable onPress={() => {
                         setCalendarOpen(false);
                     }}>
-                        <Octicons name="x" size={24} />
+                        <Octicons name="x" size={24} style={{ color: themeStyles.color }} />
                     </Pressable>
                 </View>
 
@@ -93,26 +97,26 @@ const Calendar = ({
                         <Pressable onPress={() => {
                             setCalendarYear(calendarYear - 1);
                         }} style={styles.navigation}>
-                            <Octicons name="chevron-left" size={24} />
+                            <Octicons name="chevron-left" size={24} style={{ color: themeStyles.color }} />
                         </Pressable>
                         <Text style={styles.headerText}>{calendarYear}</Text>
                         <Pressable onPress={() => {
                             setCalendarYear(calendarYear + 1);
                         }} style={styles.navigation}>
-                            <Octicons name="chevron-right" size={24} />
+                            <Octicons name="chevron-right" size={24} style={{ color: themeStyles.color }} />
                         </Pressable>
                     </View>
                     <View style={styles.headerNavigation}>
                         <Pressable onPress={() => {
                             calendarMonthNavigation(false);
                         }} style={styles.navigation}>
-                            <Octicons name="chevron-left" size={24} />
+                            <Octicons name="chevron-left" size={24} style={{ color: themeStyles.color }} />
                         </Pressable>
                         <Text style={styles.headerText}>{t(monthsList[calendarMonth])}</Text>
                         <Pressable onPress={() => {
                             calendarMonthNavigation(true);
                         }} style={styles.navigation}>
-                            <Octicons name="chevron-right" size={24} />
+                            <Octicons name="chevron-right" size={24} style={{ color: themeStyles.color }} />
                         </Pressable>
                     </View>
                 </View>
@@ -137,13 +141,11 @@ const Calendar = ({
                         const aditionalStyles = !emptyCell
                             ? selectedDay
                                 ? {
-                                    backgroundColor: 'blue',
-                                    color: 'white'
+                                    backgroundColor: 'rgb(1, 123, 223)',
                                 }
                                 : daysWithData?.includes(dayItem + 1)
                                     ? {
-                                        backgroundColor: 'green',
-                                        color: 'white'
+                                        backgroundColor: 'rgb(0, 219, 110)',
                                     }
                                     : null
                             : null;
@@ -159,9 +161,7 @@ const Calendar = ({
                                     }} style={[styles.calendarDay, {
                                         backgroundColor: aditionalStyles?.backgroundColor
                                     }]}>
-                                        <Text style={[styles.textCenter, {
-                                            color: aditionalStyles?.color
-                                        }]}>{dayItem + 1}</Text>
+                                        <Text style={[styles.textCenter]}>{dayItem + 1}</Text>
                                     </Pressable>
                                 </View>
                                 : <Text style={styles.cellWidth} key={index}></Text>
@@ -173,11 +173,11 @@ const Calendar = ({
     )
 };
 
-const styles = StyleSheet.create({
+const calendarStyles = (themeStyles: themeStylesType) => StyleSheet.create({
     calendarContainer: {
         width: '95%',
         maxWidth: 1000,
-        backgroundColor: 'white',
+        backgroundColor: themeStyles.backgroundModal,
         borderRadius: 18,
         position: 'absolute',
         top: 150,
@@ -194,7 +194,7 @@ const styles = StyleSheet.create({
         shadowRadius: 9.11,
         elevation: 14,
         borderWidth: 1,
-        borderColor: 'rgba(0, 0, 0, .25)',
+        borderColor: themeStyles.border,
     },
     closeIcon: {
         position: 'absolute',
@@ -222,7 +222,8 @@ const styles = StyleSheet.create({
         paddingVertical: 5,
         paddingHorizontal: 15,
         width: 150,
-        textAlign: 'center'
+        textAlign: 'center',
+        color: themeStyles.color
     },
     calendarWeekdays: {
         flexDirection: 'row',
@@ -233,18 +234,21 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         flexWrap: 'wrap',
         width: '100%',
-        borderTopWidth: 1
+        borderTopWidth: 1,
+        borderColor: themeStyles.border
     },
     cellWidth: {
         width: `${(100 / 7.15)}%`,
     },
     textCenter: {
-        textAlign: 'center'
+        textAlign: 'center',
+        color: themeStyles.color,
     },
     calendarDay: {
         paddingVertical: 10,
         borderRadius: '50%',
-        borderWidth: 1
+        borderWidth: 1,
+        borderColor: themeStyles.border
     }
 });
 

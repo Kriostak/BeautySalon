@@ -4,10 +4,11 @@ import Checkbox from 'expo-checkbox';
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
 import Octicons from '@expo/vector-icons/Octicons';
 
-import { customersSectionType, customerType } from "@/constants/types";
+import { customersSectionType, customerType, themeStylesType } from "@/constants/types";
 import { removeCustomerFromList, recalcSectionSum } from '@/utils/utils';
 import { weekDaysList, monthsList } from '@/constants/constants';
 import useTranslate from '@/hooks/useTranslate';
+import useTheme from '@/hooks/useTheme';
 
 type Props = {
     formOpen: boolean;
@@ -33,6 +34,9 @@ const CustomerForm = (
         selectedMonth,
         selectedDate
     }: Props): React.ReactElement => {
+    const { t } = useTranslate();
+    const { themeStyles } = useTheme();
+
     const basicFormValues: customerType = {
         day: selectedDate,
         weekday: weekDaysList[
@@ -52,7 +56,6 @@ const CustomerForm = (
         creamPrice: 0,
         id: new Date().getTime(),
     }
-    const { t } = useTranslate();
     const [formElements, setFormElements] = useState<typeof basicFormValues>(basicFormValues);
 
     useEffect(() => {
@@ -188,6 +191,8 @@ const CustomerForm = (
         }
     }
 
+    const styles = formStyles(themeStyles);
+
     return (
         <Modal animationType="slide" transparent={true} visible={formOpen}>
             <View style={styles.container}>
@@ -195,7 +200,7 @@ const CustomerForm = (
                     <Pressable onPress={() => {
                         setFormOpen(false);
                     }}>
-                        <Octicons name="x" size={24} />
+                        <Octicons name="x" size={24} style={{ color: themeStyles.color }} />
                     </Pressable>
                 </View>
                 <Text style={styles.title}>{customer?.id ? t('Edit Customer') : t('Add Customer')}</Text>
@@ -208,8 +213,9 @@ const CustomerForm = (
                                 name: val
                             }))}
                             placeholder={t('Customer Name')}
+                            placeholderTextColor={themeStyles.color}
                             style={[styles.textInput, {
-                                borderColor: !isValid && formElements.name.trim().length < 3 ? 'rgba(255, 0, 0, .5)' : 'rgba(0, 0, 0, .5)',
+                                borderColor: !isValid && formElements.name.trim().length < 3 ? 'rgba(255, 0, 0, .5)' : themeStyles.border,
                             }]}
                         />
                     </View>
@@ -218,6 +224,7 @@ const CustomerForm = (
                         <TextInput
                             inputMode='decimal'
                             placeholder={t('Price')}
+                            placeholderTextColor={themeStyles.color}
                             value={formElements.price === 0 ? '' : String(formElements.price)}
                             onChangeText={(val) => setFormElements(old => ({
                                 ...old,
@@ -237,6 +244,9 @@ const CustomerForm = (
                                     type: event.nativeEvent.selectedSegmentIndex
                                 }))
                             }}
+                            backgroundColor={themeStyles.backgroundSegmentControl}
+                            fontStyle={{ color: themeStyles.color }}
+                            tintColor={themeStyles.tintSegmentControl}
                         />
                     </View>
 
@@ -248,9 +258,13 @@ const CustomerForm = (
                             toggleCheckbox({ val: !formElements.isNew, key: 'isNew', isNewToggle: true });
                         }}>
                             <View style={styles.checkboxWrapper}>
-                                <Checkbox value={formElements.isNew} onValueChange={(val) => {
-                                    toggleCheckbox({ val, key: 'isNew', isNewToggle: true });
-                                }} />
+                                <Checkbox
+                                    style={{ borderColor: themeStyles.border }}
+                                    value={formElements.isNew}
+                                    onValueChange={(val) => {
+                                        toggleCheckbox({ val, key: 'isNew', isNewToggle: true });
+                                    }}
+                                />
                                 <Text style={styles.checkboxText}>{t('Is New')}</Text>
                             </View>
                         </Pressable>
@@ -259,9 +273,17 @@ const CustomerForm = (
                             formElements.isNew && toggleCheckbox({ val: !formElements.isClosed, key: 'isClosed' });
                         }}>
                             <View style={styles.checkboxWrapper}>
-                                <Checkbox value={formElements.isClosed} onValueChange={(val) => {
-                                    toggleCheckbox({ val, key: 'isClosed' });
-                                }} disabled={!formElements.isNew} />
+                                <Checkbox
+                                    style={{
+                                        borderColor: themeStyles.border,
+                                        opacity: !formElements.isNew ? .5 : 1
+                                    }}
+                                    value={formElements.isClosed}
+                                    onValueChange={(val) => {
+                                        toggleCheckbox({ val, key: 'isClosed' });
+                                    }}
+                                    disabled={!formElements.isNew}
+                                />
                                 <Text style={[styles.checkboxText, { opacity: formElements.isNew ? 1 : .5 }]}>{t('Is Closed')}</Text>
                             </View>
                         </Pressable>
@@ -272,9 +294,13 @@ const CustomerForm = (
                             toggleCheckbox({ val: !formElements.isTransferred, key: 'isTransferred' });
                         }}>
                             <View style={styles.checkboxWrapper}>
-                                <Checkbox value={formElements.isTransferred} onValueChange={(val) => {
-                                    toggleCheckbox({ val, key: 'isTransferred' });
-                                }} />
+                                <Checkbox
+                                    style={{ borderColor: themeStyles.border }}
+                                    value={formElements.isTransferred}
+                                    onValueChange={(val) => {
+                                        toggleCheckbox({ val, key: 'isTransferred' });
+                                    }}
+                                />
                                 <Text style={styles.checkboxText}>{t('Is Transferred')}</Text>
                             </View>
                         </Pressable>
@@ -295,7 +321,8 @@ const CustomerForm = (
                         <TextInput
                             inputMode='decimal'
                             placeholder={t('Cream Price')}
-                            value={formElements.price === 0 ? '' : String(formElements.creamPrice)}
+                            placeholderTextColor={themeStyles.color}
+                            value={formElements.creamPrice === 0 ? '' : String(formElements.creamPrice)}
                             onChangeText={(val) => setFormElements(old => ({
                                 ...old,
                                 creamPrice: Number(val)
@@ -315,11 +342,11 @@ const CustomerForm = (
     );
 };
 
-const styles = StyleSheet.create({
+const formStyles = (themeStyles: themeStylesType) => StyleSheet.create({
     container: {
         width: '90%',
         maxWidth: 1000,
-        backgroundColor: 'white',
+        backgroundColor: themeStyles.backgroundModal,
         borderRadius: 18,
         position: 'absolute',
         top: '50%',
@@ -336,13 +363,14 @@ const styles = StyleSheet.create({
         shadowRadius: 9.11,
         elevation: 14,
         borderWidth: 1,
-        borderColor: 'rgba(0, 0, 0, .25)',
+        borderColor: themeStyles.border,
     },
     title: {
         textAlign: 'center',
         fontSize: 20,
         fontWeight: '500',
         zIndex: 1,
+        color: themeStyles.color
     },
     closeIcon: {
         position: 'absolute',
@@ -358,14 +386,15 @@ const styles = StyleSheet.create({
         paddingHorizontal: 5,
         borderWidth: 1,
         borderRadius: 5,
-        borderColor: 'rgba(0,0,0, .5)'
+        borderColor: themeStyles.border
     },
     checkboxWrapper: {
         flexDirection: 'row',
         alignItems: 'center'
     },
     checkboxText: {
-        paddingLeft: 5
+        paddingLeft: 5,
+        color: themeStyles.color
     },
     submitContainer: {
         alignItems: 'center'
@@ -374,7 +403,9 @@ const styles = StyleSheet.create({
         width: '100%',
         maxWidth: 300,
         marginHorizontal: 'auto',
-        backgroundColor: 'lightgreen',
+        backgroundColor: 'rgba(51,178,73, .75)',
+        borderWidth: 1,
+        borderColor: themeStyles.border,
         textAlign: 'center',
         fontSize: 20,
         paddingHorizontal: 15,

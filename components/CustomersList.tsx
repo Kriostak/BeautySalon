@@ -2,10 +2,11 @@ import { useContext } from "react";
 import { View, Text, SectionList, Pressable, StyleSheet } from "react-native";
 import Octicons from '@expo/vector-icons/Octicons';
 
-import { customersSectionType, customerType } from "@/constants/types";
+import { customersSectionType, customerType, themeStylesType } from "@/constants/types";
 import { removeCustomerFromList, currencyFormat } from "@/utils/utils";
 import useTranslate from "@/hooks/useTranslate";
 import { monthsList } from "@/constants/constants";
+import useTheme from "@/hooks/useTheme";
 
 
 type Props = {
@@ -30,6 +31,7 @@ const CustomersList = ({
     showOnlyDay
 }: Props): React.ReactElement => {
     const { t } = useTranslate();
+    const { themeStyles } = useTheme();
 
     const removeCustomer = (
         { item, index, section }
@@ -62,6 +64,8 @@ const CustomersList = ({
         setCustomersList(customersListCopy);
     }
 
+    const styles = listStyles(themeStyles);
+
     const renderCustomerItem = (
         { item, index, section }
             : {
@@ -80,14 +84,17 @@ const CustomersList = ({
             : {};
 
         return (
-            <View style={[styles.customerContainer, isClosedStyles]}>
+            <View style={[styles.customerContainer, isClosedStyles, {
+                opacity: section.day !== selectedDate ? .65 : 1,
+                borderStyle: index !== section.data.length - 1 ? 'dashed' : 'solid'
+            }]}>
                 <Text style={styles.customerName}>{item.name}</Text>
                 <View style={styles.customerMain}>
                     <Pressable onPress={() => {
                         setCustomer(item);
                         setFormOpen(true);
                     }}>
-                        <Octicons name="pencil" size={20} style={[styles.customerButton, { backgroundColor: 'lightgreen' }]} />
+                        <Octicons name="pencil" size={20} style={[styles.customerButton, { backgroundColor: 'rgba(51,178,73, .75)' }]} />
                     </Pressable>
 
 
@@ -96,7 +103,7 @@ const CustomersList = ({
                         <Pressable onPress={() => {
 
                         }}>
-                            <Text numberOfLines={1} ellipsizeMode="tail" style={{ width: 100 }}>{item.transferredComment}</Text>
+                            <Text numberOfLines={1} ellipsizeMode="tail" style={{ width: 100, color: themeStyles.color }}>{item.transferredComment}</Text>
                         </Pressable>
                         <Text style={styles.customerPrice}>{currencyFormat(item.price)}</Text>
                     </View>
@@ -104,7 +111,7 @@ const CustomersList = ({
                     <Pressable onPress={() => {
                         removeCustomer({ item, index, section });
                     }}>
-                        <Octicons name="trash" size={20} style={[styles.customerButton, { backgroundColor: 'red' }]} />
+                        <Octicons name="trash" size={20} style={[styles.customerButton, { backgroundColor: 'rgba(237,8,0, .75)' }]} />
                     </Pressable>
                 </View>
             </View>
@@ -124,12 +131,18 @@ const CustomersList = ({
                     sections={filteredCustomersList}
                     renderSectionHeader={({ section }) => {
                         return (
-                            <View style={styles.sectionHeader}>
-                                <Text style={[styles.sectionText, { fontSize: 16 }]}>{`${t(section.weekday)} ${section.day}`}</Text>
+                            <View style={[styles.sectionHeader, { opacity: section.day !== selectedDate ? .65 : 1 }]}>
+                                <Text style={[styles.sectionText, {
+                                    fontSize: 16,
+                                    fontWeight: 500,
+                                    borderBottomWidth: 1,
+                                    borderColor: themeStyles.border
+                                }]}>{`${t(section.weekday)} ${section.day}`}</Text>
+
                                 <View style={styles.sectionInfo}>
                                     <View style={styles.sectionSumContainer}>
                                         <View>
-                                            <Text style={[styles.sectionText, { textAlign: 'left', marginRight: 5 }]}>{t('Nw')}:</Text>
+                                            <Text style={[styles.sectionText, { textAlign: 'left', marginRight: 5, }]}>{t('Nw')}:</Text>
                                             <Text style={[styles.sectionText, { textAlign: 'left', marginRight: 5 }]}>{t('Cl')}:</Text>
                                         </View>
                                         <View>
@@ -140,19 +153,19 @@ const CustomersList = ({
 
                                     <View style={styles.sectionSumContainer}>
                                         <View>
-                                            <Text style={[styles.sectionText, { textAlign: 'right', marginRight: 5 }]}>{t('Mh')}:</Text>
-                                            <Text style={[styles.sectionText, { textAlign: 'right', marginRight: 5 }]}>{t('L')}:</Text>
+                                            <Text style={[styles.sectionText, { textAlign: 'right', marginRight: 5, fontWeight: 500 }]}>{t('Mh')}:</Text>
+                                            <Text style={[styles.sectionText, { textAlign: 'right', marginRight: 5, fontWeight: 500 }]}>{t('L')}:</Text>
                                         </View>
                                         <View>
-                                            <Text style={[styles.sectionText, { color: 'brown' }]}>{currencyFormat(section.mhSum)}</Text>
-                                            <Text style={[styles.sectionText, { color: 'purple' }]}>{currencyFormat(section.lSum)}</Text>
+                                            <Text style={[styles.sectionText, { fontWeight: 500 }]}>{currencyFormat(section.mhSum)}</Text>
+                                            <Text style={[styles.sectionText, { fontWeight: 500 }]}>{currencyFormat(section.lSum)}</Text>
                                         </View>
                                     </View>
 
                                     <View style={styles.sectionSumContainer}>
                                         <View>
-                                            <Text style={[styles.sectionText, { textAlign: 'right', marginRight: 5 }]}>{t('Cr')}:</Text>
-                                            <Text style={[styles.sectionText, { textAlign: 'right', marginRight: 5 }]}>{t('Tr')}:</Text>
+                                            <Text style={[styles.sectionText, { textAlign: 'left', marginRight: 5 }]}>{t('Cr')}:</Text>
+                                            <Text style={[styles.sectionText, { textAlign: 'left', marginRight: 5 }]}>{t('Tr')}:</Text>
                                         </View>
                                         <View>
                                             <Text style={[styles.sectionText]}>{section.creamsSold}</Text>
@@ -179,10 +192,11 @@ const CustomersList = ({
     )
 }
 
-const styles = StyleSheet.create({
+const listStyles = (themeStyles: themeStylesType) => StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: 'center'
+        justifyContent: 'center',
+        backgroundColor: themeStyles.backgroundList
     },
     emptyList: {
         textAlign: 'center',
@@ -196,7 +210,8 @@ const styles = StyleSheet.create({
         paddingVertical: 10,
         paddingHorizontal: 10,
         borderBottomWidth: 1,
-        backgroundColor: 'white',
+        backgroundColor: themeStyles.backgroundSection,
+        borderColor: themeStyles.border
     },
     sectionInfo: {
         flexDirection: 'row',
@@ -208,15 +223,15 @@ const styles = StyleSheet.create({
         flexDirection: 'row'
     },
     sectionText: {
-        fontWeight: 500,
         fontSize: 14,
+        color: themeStyles.color
     },
     customerContainer: {
         alignItems: 'center',
         paddingHorizontal: 15,
         paddingVertical: 10,
         borderBottomWidth: 1,
-        borderStyle: 'dashed',
+        borderColor: themeStyles.border,
         flex: 1,
     },
     customerMain: {
@@ -234,14 +249,17 @@ const styles = StyleSheet.create({
     customerName: {
         textAlign: 'center',
         fontSize: 16,
+        color: themeStyles.color
     },
     customerType: {
         fontSize: 16,
         fontWeight: 500,
+        color: themeStyles.color
     },
     customerPrice: {
         fontSize: 16,
         fontWeight: 500,
+        color: themeStyles.color
     },
     customerButtons: {
         flexDirection: 'row'

@@ -101,8 +101,6 @@ export default function Index() {
         salaryObject={salaryObject}
         salaryListOpen={salaryListOpen}
         setSalaryListOpen={setSalaryListOpen}
-        totalMhSum={totalMhSum ?? 0}
-        totalLSum={totalLSum ?? 0}
       />
 
       <CustomerListFooter

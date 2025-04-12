@@ -118,7 +118,7 @@ export const getSalary = ({
     const transferredSalary = isTransferredCount * TRANSFERRED_PERCENT;
     const creamSalary = creamSum * CREAM_PERCENT;
 
-    const totalSalary = laserSalary + multishapeSalary + transferredSalary;
+    const totalSalary = laserSalary + multishapeSalary + transferredSalary + creamSalary;
 
     return {
         laserSalary,

@@ -3,6 +3,7 @@ import {
     weekDaysList,
     shortWeekDaysList
 } from "./constants";
+import themeStyles from "./themeStyles";
 
 // create a union types of const arrays
 export type monthType = typeof monthsList[number];
@@ -50,3 +51,16 @@ export type salaryObjectType = {
     creamSalary: number,
     totalSalary: number
 }
+
+export type themeType = 'light' | 'dark';
+
+export type themeStylesType = {
+    border: string,
+    backgroundTitle: string,
+    backgroundSection: string,
+    backgroundList: string,
+    backgroundModal: string,
+    backgroundSegmentControl: string,
+    tintSegmentControl: string,
+    color: string
+};

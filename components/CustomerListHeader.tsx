@@ -1,9 +1,10 @@
 import { View, StyleSheet, Pressable, Text } from "react-native";
 import Octicons from '@expo/vector-icons/Octicons';
-import { customerType, monthType } from "@/constants/types";
 
-import { currencyFormat } from "@/utils/utils";
+import { customerType, monthType, themeType, themeStylesType } from "@/constants/types";
+
 import useTranslate from "@/hooks/useTranslate";
+import useTheme from "@/hooks/useTheme";
 
 type Props = {
     setCalendarOpen: (isOpen: boolean) => void;
@@ -23,11 +24,12 @@ const CustomerListHeader = ({
     setCustomer,
     setFormOpen,
     setSalaryListOpen,
-    totalMhSum,
-    totalLSum,
 
 }: Props) => {
     const { t } = useTranslate();
+    const { themeStyles } = useTheme();
+
+    const styles = headerStyles(themeStyles);
 
     return (
         <View style={styles.customersListHeader}>
@@ -40,8 +42,8 @@ const CustomerListHeader = ({
             <View style={{
                 marginRight: -35
             }}>
-                <Text style={styles.backText}>{selectedYear}</Text>
-                <Text style={styles.backText}>{t(selectedMonth)}</Text>
+                <Text style={styles.monthText}>{selectedYear}</Text>
+                <Text style={styles.monthText}>{t(selectedMonth)}</Text>
             </View>
 
             <View style={styles.buttonContainer}>
@@ -61,7 +63,7 @@ const CustomerListHeader = ({
     );
 }
 
-const styles = StyleSheet.create({
+const headerStyles = (themeStyles: themeStylesType) => StyleSheet.create({
     customersListHeader: {
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -69,13 +71,15 @@ const styles = StyleSheet.create({
         paddingHorizontal: 15,
         paddingVertical: 10,
         borderBottomWidth: 1,
-        backgroundColor: 'lightgray'
+        borderBottomColor: themeStyles.border,
+        backgroundColor: themeStyles.backgroundTitle
     },
-    backText: {
+    monthText: {
         paddingLeft: 5,
         fontSize: 16,
         textAlign: 'center',
-        fontWeight: 500
+        fontWeight: 500,
+        color: themeStyles.color
     },
     totalSum: {
         paddingHorizontal: 10,
@@ -103,11 +107,12 @@ const styles = StyleSheet.create({
     button: {
         borderWidth: 1,
         borderRadius: 5,
-        borderColor: 'black',
-        paddingTop: 8,
-        paddingLeft: 8,
+        borderColor: themeStyles.border,
+        paddingTop: 6,
+        paddingLeft: 7,
         paddingRight: 6,
-        paddingBottom: 5,
+        paddingBottom: 6,
+        color: themeStyles.color
     }
 });
 

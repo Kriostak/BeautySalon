@@ -3,6 +3,8 @@ import Octicons from '@expo/vector-icons/Octicons';
 
 import { useContext } from "react";
 import { StoreContext } from "@/context/StoreContext";
+import { themeStylesType } from "@/constants/types";
+import useTheme from "@/hooks/useTheme";
 
 type Props = {
     showOnlyDay: boolean;
@@ -14,31 +16,37 @@ const CustomerListFooter = ({
     setShowOnlyDay,
 }: Props): React.ReactElement => {
     const { store: { lang }, dispatch } = useContext(StoreContext);
+    const { themeStyles, theme } = useTheme();
+
+    const styles = footerStyles(themeStyles);
 
     return (
         <View style={styles.customerListFooter}>
-            <View style={styles.footerButtons}>
-                <Pressable
-                    onPress={() => dispatch({ type: 'switchLocalization' })}
-                    style={styles.footerButton}>
-                    <Text>{lang === 'UA' ? 'EN' : 'UA'}</Text>
-                </Pressable>
-                {/* <Pressable style={styles.footerButton}>
-                    <Octicons name={lightTheme ? 'moon' : 'sun'} size={20} />
-                </Pressable> */}
-            </View>
+
+            <Pressable
+                onPress={() => dispatch({ type: 'switchLocalization' })}
+                style={styles.footerButton}>
+                <Text style={{ color: themeStyles.color }}>{lang === 'UA' ? 'EN' : 'UA'}</Text>
+            </Pressable>
+
+            <Pressable
+                onPress={() => dispatch({ type: 'switchTheme' })}
+                style={styles.footerButton}>
+                <Octicons name={theme === 'light' ? 'moon' : 'sun'} size={20} style={{ color: themeStyles.color }} />
+            </Pressable>
+
 
             <Pressable
                 onPress={() => setShowOnlyDay(!showOnlyDay)}
                 style={styles.footerButton}
             >
-                <Octicons name={showOnlyDay ? 'fold-down' : 'fold'} size={20} />
+                <Octicons name={showOnlyDay ? 'fold-down' : 'fold'} size={20} style={{ color: themeStyles.color }} />
             </Pressable>
         </View>
     );
 };
 
-const styles = StyleSheet.create({
+const footerStyles = (themeStyles: themeStylesType) => StyleSheet.create({
     customerListFooter: {
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -46,7 +54,8 @@ const styles = StyleSheet.create({
         paddingHorizontal: 15,
         paddingVertical: 10,
         borderTopWidth: 1,
-        backgroundColor: 'lightgray'
+        backgroundColor: themeStyles.backgroundTitle,
+        borderTopColor: themeStyles.border
     },
     footerButtons: {
         flexDirection: 'row',
@@ -59,6 +68,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         borderWidth: 1,
         borderRadius: 5,
+        borderColor: themeStyles.border
     },
     salaryContainer: {
         marginLeft: 0,
