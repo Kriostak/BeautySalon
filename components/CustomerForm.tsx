@@ -226,10 +226,12 @@ const CustomerForm = (
                             placeholder={t('Price')}
                             placeholderTextColor={themeStyles.color}
                             value={formElements.price === 0 ? '' : String(formElements.price)}
-                            onChangeText={(val) => setFormElements(old => ({
-                                ...old,
-                                price: Number(val)
-                            }))}
+                            onChangeText={(val) => {
+                                setFormElements(old => ({
+                                    ...old,
+                                    price: Number(val)
+                                }))
+                            }}
                             style={styles.textInput}
                         />
                     </View>
@@ -323,10 +325,12 @@ const CustomerForm = (
                             placeholder={t('Cream Price')}
                             placeholderTextColor={themeStyles.color}
                             value={formElements.creamPrice === 0 ? '' : String(formElements.creamPrice)}
-                            onChangeText={(val) => setFormElements(old => ({
-                                ...old,
-                                creamPrice: Number(val)
-                            }))}
+                            onChangeText={(val) => {
+                                setFormElements(old => ({
+                                    ...old,
+                                    creamPrice: Number(val)
+                                }))
+                            }}
                             style={styles.textInput}
                         />
                     </View>

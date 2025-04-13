@@ -55,7 +55,7 @@ export const recalcSectionSum = (sectionObj: customersSectionType) => {
 }
 
 export const currencyFormat = (num: number): string => {
-    return '₴' + num.toFixed(0).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
+    return '₴' + num.toFixed(1).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
 }
 
 export const between = (
@@ -111,10 +111,10 @@ export const getSalary = ({
         });
     });
 
-    const multishapePercentage = isNewCount ? (isClosedCount / isNewCount) * 100 : 0;
+    const multishapePercentage = isNewCount ? (isClosedCount * 100) / isNewCount : 0;
 
     const laserSalary = totalLSum * LASER_PERCENT;
-    const multishapeSalary = totalMhSum * multishapePercentage;
+    const multishapeSalary = totalMhSum * getMultishapePercent(multishapePercentage);
     const transferredSalary = isTransferredCount * TRANSFERRED_PERCENT;
     const creamSalary = creamSum * CREAM_PERCENT;
 

@@ -44,7 +44,7 @@ const Calendar = ({
         }).then(customersListResponse => {
             setCalendarCustomersList(customersListResponse);
         });
-    }, [calendarYear, calendarMonth]);
+    }, [calendarYear, calendarMonth, calendarOpen]);
 
     const calendarDate = new Date(calendarYear, (calendarMonth + 1), 0);
     const daysCount = [...Array(calendarDate.getDate()).keys()];
@@ -75,9 +75,7 @@ const Calendar = ({
         setCalendarMonth(newCalendarMonth);
     }
 
-    const daysWithData = useMemo(() => {
-        return calendarCustomersList?.map(day => day.day);
-    }, [calendarCustomersList]);
+    const daysWithData = calendarCustomersList?.map(day => day.day);
 
     const styles = calendarStyles(themeStyles);
 
