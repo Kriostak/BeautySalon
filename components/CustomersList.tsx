@@ -7,29 +7,22 @@ import { removeCustomerFromList, currencyFormat } from "@/utils/utils";
 import useTranslate from "@/hooks/useTranslate";
 import { monthsList } from "@/constants/constants";
 import useTheme from "@/hooks/useTheme";
+import { StoreContext } from "@/context/StoreContext";
 
 
 type Props = {
-    customersList: customersSectionType[] | [];
-    setCustomersList: (customersList: customersSectionType[]) => void;
     setFormOpen: (isOpen: boolean) => void;
-    setCustomer: (customer: customerType) => void;
     setStoreCustomersList: (newCustomersList: customersSectionType[]) => void;
-    selectedMonth: string;
-    selectedDate: number;
     showOnlyDay: boolean;
 }
 
 const CustomersList = ({
-    customersList,
-    setCustomersList,
-    setCustomer,
     setFormOpen,
     setStoreCustomersList,
-    selectedMonth,
-    selectedDate,
     showOnlyDay
 }: Props): React.ReactElement => {
+    const { selectedMonth, selectedDate, customersList, dispatch } = useContext(StoreContext);
+
     const { t } = useTranslate();
     const { themeStyles } = useTheme();
 
@@ -41,7 +34,7 @@ const CustomersList = ({
                 section: customersSectionType;
             }
     ) => {
-        const customersListCopy = [...customersList];
+        const customersListCopy = customersList ? [...customersList] : [];
 
         const sectionIndex = customersListCopy.findIndex((sectionItem: customersSectionType) => {
             return sectionItem.day === section.day && sectionItem.weekday === section.weekday
@@ -61,7 +54,11 @@ const CustomersList = ({
         });
 
         setStoreCustomersList(customersListCopy);
-        setCustomersList(customersListCopy);
+        dispatch({
+            type: 'mutate', payload: {
+                customersList: customersListCopy
+            }
+        });
     }
 
     const styles = listStyles(themeStyles);
@@ -91,7 +88,7 @@ const CustomersList = ({
                 <Text style={styles.customerName}>{item.name}</Text>
                 <View style={styles.customerMain}>
                     <Pressable onPress={() => {
-                        setCustomer(item);
+                        dispatch({ type: 'mutate', payload: { customer: item } })
                         setFormOpen(true);
                     }}>
                         <Octicons name="pencil" size={20} style={[styles.customerButton, { backgroundColor: 'rgba(51,178,73, .75)' }]} />
@@ -119,7 +116,7 @@ const CustomersList = ({
     }
 
     const filteredCustomersList = showOnlyDay
-        ? customersList.filter(section => section.day === selectedDate)
+        ? customersList?.filter(section => section.day === selectedDate)
         : customersList;
 
     const monthNumber = monthsList.indexOf(selectedMonth) + 1;
@@ -203,7 +200,10 @@ const listStyles = (themeStyles: themeStylesType) => StyleSheet.create({
         fontSize: 24,
         color: 'red',
         maxWidth: '70%',
-        marginHorizontal: 'auto'
+        marginHorizontal: 'auto',
+        textShadowColor: 'rgb(255, 255, 255)',
+        textShadowOffset: { width: 0, height: 0 },
+        textShadowRadius: 1
     },
     sectionHeader: {
         alignItems: 'center',

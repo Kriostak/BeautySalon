@@ -3,7 +3,6 @@ import {
     weekDaysList,
     shortWeekDaysList
 } from "./constants";
-import themeStyles from "./themeStyles";
 
 // create a union types of const arrays
 export type monthType = typeof monthsList[number];

@@ -4,7 +4,7 @@ import { StoreContext } from "@/context/StoreContext";
 import themeStyles from "@/constants/themeStyles";
 
 const useTheme = () => {
-    const { store: { theme } } = useContext(StoreContext);
+    const { theme } = useContext(StoreContext);
 
     return {
         theme,

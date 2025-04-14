@@ -1,12 +1,12 @@
 import { useContext } from "react";
 
 import { StoreContext } from "@/context/StoreContext";
-import localizationData from "@/constants/localizationData";
+import localizationData, { localizationType } from "@/constants/localizationData";
 
 const useTranslate = () => {
-    const { store: { lang } } = useContext(StoreContext);
+    const { lang } = useContext(StoreContext);
 
-    const t = (text: string, params?: Record<string, string | number>) => {
+    const t = (text: keyof localizationType, params?: Record<string, string | number>) => {
         let translateString = localizationData?.[lang]?.[text] ?? text;
 
         params && Object.keys(params).forEach(key => {

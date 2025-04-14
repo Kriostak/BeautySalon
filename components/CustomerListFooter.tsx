@@ -15,7 +15,7 @@ const CustomerListFooter = ({
     showOnlyDay,
     setShowOnlyDay,
 }: Props): React.ReactElement => {
-    const { store: { lang }, dispatch } = useContext(StoreContext);
+    const { lang, dispatch } = useContext(StoreContext);
     const { themeStyles, theme } = useTheme();
 
     const styles = footerStyles(themeStyles);

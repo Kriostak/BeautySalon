@@ -1,27 +1,38 @@
-import { Context, createContext, useReducer } from "react";
+import { createContext, useReducer } from "react";
+
+import { monthType, customerType, customersSectionType } from "@/constants/types";
+import { monthsList } from "@/constants/constants";
 
 const initialValues = {
     lang: 'UA' as 'UA' | 'EN',
     theme: 'light' as 'light' | 'dark',
+    selectedYear: String(new Date().getFullYear()),
+    selectedMonth: monthsList[new Date().getMonth()] as monthType,
+    selectedDate: new Date().getDate(),
+    customer: undefined as customerType | undefined,
+    customersList: [] as customersSectionType[] | [] | null,
 };
 
-type dispatchActionType = Record<string, string | number | boolean>;
+const reducerActions = ['switchLocalization', 'switchTheme', 'mutate'] as const;
 
+type dispatchActionType = {
+    type: typeof reducerActions[number];
+    payload?: Partial<typeof initialValues>;
+};
 
 type storeContextType = {
-    store: typeof initialValues;
-    dispatch: React.Dispatch<{ type: string; payload?: dispatchActionType }>;
-};
+    dispatch: React.Dispatch<dispatchActionType>;
+} & typeof initialValues;
 
 export const StoreContext = createContext<storeContextType>({
-    store: { ...initialValues },
+    ...initialValues,
     dispatch: () => { },
 });
 
 const StoreProvider = ({ children }: { children: React.ReactElement }): React.ReactElement => {
     const reducer = (
         store: typeof initialValues,
-        action: { type: string; payload?: dispatchActionType }
+        action: dispatchActionType
     ): typeof initialValues => {
 
         switch (action.type) {
@@ -37,6 +48,12 @@ const StoreProvider = ({ children }: { children: React.ReactElement }): React.Re
                     theme: store.theme === 'light' ? 'dark' : 'light'
                 }
             }
+            case 'mutate': {
+                return {
+                    ...store,
+                    ...action.payload
+                }
+            }
             default: {
                 return store;
             }
@@ -45,7 +62,7 @@ const StoreProvider = ({ children }: { children: React.ReactElement }): React.Re
 
     const [store, dispatch] = useReducer(reducer, initialValues);
 
-    return <StoreContext.Provider value={{ store, dispatch }}>{children}</StoreContext.Provider>
+    return <StoreContext.Provider value={{ ...store, dispatch }}>{children}</StoreContext.Provider>
 }
 
 export default StoreProvider;

@@ -1,12 +1,11 @@
 
-import { useEffect, useState, } from "react";
+import { useEffect, useState, useContext } from "react";
 import { StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 
 import { getStoreCustomersList } from "@/actions/actions";
 import { customerType, customersSectionType } from "@/constants/types";
-import { monthsList } from "@/constants/constants";
 
 import { setStoreData } from "@/actions/AsyncStorage";
 
@@ -17,22 +16,20 @@ import CustomerForm from "@/components/CustomerForm";
 import Calendar from "@/components/Calendar";
 import { getSalary } from "@/utils/utils";
 import SalaryList from "@/components/SalaryList";
+import { StoreContext } from "@/context/StoreContext";
 
 
 export default function Index() {
-  const [selectedYear, setSelectedYear] = useState<string>(String(new Date().getFullYear()));
-  const [selectedMonth, setSelectedMonth] = useState<string>(monthsList[new Date().getMonth()]);
-  const [selectedDate, setSelectedDate] = useState<number>(new Date().getDate());
-  const [customersList, setCustomersList] = useState<customersSectionType[] | null>();
+  const { selectedYear, selectedMonth, customersList, dispatch } = useContext(StoreContext);
+
   const [formOpen, setFormOpen] = useState<boolean>(false);
-  const [customer, setCustomer] = useState<customerType | undefined>();
   const [calendarOpen, setCalendarOpen] = useState<boolean>(false);
   const [showOnlyDay, setShowOnlyDay] = useState<boolean>(true);
   const [salaryListOpen, setSalaryListOpen] = useState<boolean>(false);
 
   useEffect(() => {
     getStoreCustomersList({ selectedYear, selectedMonth }).then(customersListResponse => {
-      setCustomersList(customersListResponse);
+      dispatch({ type: 'mutate', payload: { customersList: customersListResponse } });
     });
   }, [selectedYear, selectedMonth]);
 
@@ -54,47 +51,25 @@ export default function Index() {
 
       <CustomerListHeader
         setCalendarOpen={setCalendarOpen}
-        selectedYear={selectedYear}
-        selectedMonth={selectedMonth}
-        setCustomer={setCustomer}
         setSalaryListOpen={setSalaryListOpen}
         setFormOpen={setFormOpen}
-        totalMhSum={totalMhSum ?? 0}
-        totalLSum={totalLSum ?? 0}
       />
 
       <CustomersList
-        customersList={customersList ?? []}
-        setCustomersList={setCustomersList}
-        setCustomer={setCustomer}
         setFormOpen={setFormOpen}
         setStoreCustomersList={setStoreCustomersList}
-        selectedMonth={selectedMonth}
-        selectedDate={selectedDate}
         showOnlyDay={showOnlyDay}
       />
 
       <CustomerForm
         formOpen={formOpen}
         setFormOpen={setFormOpen}
-        customersList={customersList}
-        setCustomersList={setCustomersList}
-        customer={customer}
         setStoreCustomersList={setStoreCustomersList}
-        selectedYear={selectedYear}
-        selectedMonth={selectedMonth}
-        selectedDate={selectedDate}
       />
 
       <Calendar
         calendarOpen={calendarOpen}
         setCalendarOpen={setCalendarOpen}
-        selectedYear={selectedYear}
-        setSelectedYear={setSelectedYear}
-        selectedMonth={selectedMonth}
-        setSelectedMonth={setSelectedMonth}
-        selectedDate={selectedDate}
-        setSelectedDate={setSelectedDate}
       />
 
       <SalaryList

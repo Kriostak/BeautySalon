@@ -1,31 +1,29 @@
 import { View, StyleSheet, Pressable, Text } from "react-native";
+import { useContext } from "react";
 import Octicons from '@expo/vector-icons/Octicons';
 
-import { customerType, monthType, themeType, themeStylesType } from "@/constants/types";
+import { StoreContext } from "@/context/StoreContext";
+import { themeStylesType } from "@/constants/types";
 
 import useTranslate from "@/hooks/useTranslate";
 import useTheme from "@/hooks/useTheme";
 
 type Props = {
     setCalendarOpen: (isOpen: boolean) => void;
-    selectedYear: string;
-    selectedMonth: monthType;
-    setCustomer: (customer?: customerType) => void;
     setFormOpen: (isOpen: boolean) => void;
     setSalaryListOpen: (isOpen: boolean) => void;
-    totalMhSum: number;
-    totalLSum: number;
 };
 
 const CustomerListHeader = ({
     setCalendarOpen,
-    selectedYear,
-    selectedMonth,
-    setCustomer,
     setFormOpen,
     setSalaryListOpen,
-
 }: Props) => {
+    const {
+        selectedYear,
+        selectedMonth,
+        dispatch
+    } = useContext(StoreContext);
     const { t } = useTranslate();
     const { themeStyles } = useTheme();
 
@@ -48,7 +46,7 @@ const CustomerListHeader = ({
 
             <View style={styles.buttonContainer}>
                 <Pressable onPress={() => {
-                    setCustomer(undefined);
+                    dispatch({ type: 'mutate', payload: { customer: undefined } });
                     setFormOpen(true);
                 }}>
                     <Octicons name="person-add" size={20} style={styles.button} />
@@ -59,7 +57,7 @@ const CustomerListHeader = ({
                     <Octicons name="checklist" size={20} style={styles.button} />
                 </Pressable>
             </View>
-        </View>
+        </View >
     );
 }
 

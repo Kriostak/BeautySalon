@@ -1,35 +1,30 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useContext } from "react";
 import { Modal, View, StyleSheet, Text, Pressable } from "react-native";
 import Octicons from '@expo/vector-icons/Octicons';
 
 import { monthsList, weekDaysList, shortWeekDaysList } from "@/constants/constants";
-import { customersSectionType, monthType, themeStylesType } from "@/constants/types";
+import { customersSectionType, themeStylesType } from "@/constants/types";
 
 import { getStoreCustomersList } from "@/actions/actions";
 import useTranslate from "@/hooks/useTranslate";
 import useTheme from "@/hooks/useTheme";
+import { StoreContext } from "@/context/StoreContext";
 
 type Props = {
     calendarOpen: boolean,
     setCalendarOpen: (isOpen: boolean) => void,
-    selectedYear: string;
-    setSelectedYear: (year: string) => void;
-    selectedMonth: monthType;
-    setSelectedMonth: (month: string) => void;
-    selectedDate: number;
-    setSelectedDate: (date: number) => void;
 };
 
 const Calendar = ({
     calendarOpen,
     setCalendarOpen,
-    selectedYear,
-    setSelectedYear,
-    selectedMonth,
-    setSelectedMonth,
-    selectedDate,
-    setSelectedDate
 }: Props): React.ReactElement => {
+    const {
+        selectedYear,
+        selectedMonth,
+        selectedDate,
+        dispatch
+    } = useContext(StoreContext);
     const { t } = useTranslate();
     const { themeStyles } = useTheme();
 
@@ -152,9 +147,14 @@ const Calendar = ({
                             !emptyCell
                                 ? <View style={[styles.cellWidth, { padding: 2 }]} key={index}>
                                     <Pressable onPress={() => {
-                                        setSelectedYear(String(calendarYear));
-                                        setSelectedMonth(monthsList[calendarMonth]);
-                                        setSelectedDate(dayItem + 1);
+                                        dispatch({
+                                            type: 'mutate',
+                                            payload: {
+                                                selectedYear: String(calendarYear),
+                                                selectedMonth: monthsList[calendarMonth],
+                                                selectedDate: dayItem + 1
+                                            }
+                                        });
                                         setCalendarOpen(false);
                                     }} style={[styles.calendarDay, {
                                         backgroundColor: aditionalStyles?.backgroundColor

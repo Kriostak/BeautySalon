@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { Modal, View, TextInput, Text, Pressable, StyleSheet } from "react-native";
 import Checkbox from 'expo-checkbox';
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
@@ -9,31 +9,28 @@ import { removeCustomerFromList, recalcSectionSum } from '@/utils/utils';
 import { weekDaysList, monthsList } from '@/constants/constants';
 import useTranslate from '@/hooks/useTranslate';
 import useTheme from '@/hooks/useTheme';
+import { StoreContext } from '@/context/StoreContext';
 
 type Props = {
     formOpen: boolean;
     setFormOpen: (isOpen: boolean) => void;
-    customersList?: customersSectionType[] | null;
-    setCustomersList: (customersList: customersSectionType[]) => void;
-    customer?: customerType;
     setStoreCustomersList: (newCustomersList: customersSectionType[]) => void;
-    selectedYear: string;
-    selectedMonth: string;
-    selectedDate: number;
 }
 
 const CustomerForm = (
     {
         formOpen,
         setFormOpen,
-        customersList,
-        setCustomersList,
-        customer,
         setStoreCustomersList,
+    }: Props): React.ReactElement => {
+    const {
+        customersList,
+        customer,
         selectedYear,
         selectedMonth,
-        selectedDate
-    }: Props): React.ReactElement => {
+        selectedDate,
+        dispatch,
+    } = useContext(StoreContext);
     const { t } = useTranslate();
     const { themeStyles } = useTheme();
 
@@ -97,7 +94,7 @@ const CustomerForm = (
                 ]
             };
             setStoreCustomersList([sectionObj]);
-            setCustomersList([sectionObj]);
+            dispatch({ type: 'mutate', payload: { customersList: [sectionObj] } });
         } else {
             const customersListCopy = [...customersList];
             const sectionIndex = customersListCopy?.findIndex(section => section.day === formElements.day);
@@ -171,7 +168,7 @@ const CustomerForm = (
             }
 
             setStoreCustomersList(customersListCopy);
-            setCustomersList(customersListCopy);
+            dispatch({ type: 'mutate', payload: { customersList: customersList } });
         }
 
         setFormOpen(false);
@@ -390,7 +387,8 @@ const formStyles = (themeStyles: themeStylesType) => StyleSheet.create({
         paddingHorizontal: 5,
         borderWidth: 1,
         borderRadius: 5,
-        borderColor: themeStyles.border
+        borderColor: themeStyles.border,
+        color: themeStyles.color,
     },
     checkboxWrapper: {
         flexDirection: 'row',
