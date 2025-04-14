@@ -2,7 +2,7 @@ import { themeStylesType, themeType } from "./types";
 
 const dark: themeStylesType = {
     border: 'lightgray',
-    backgroundTitle: 'rgba(21, 23, 24, .85)',
+    backgroundTitle: 'rgba(21, 23, 24, 1)',
     backgroundSection: 'rgba(21, 23, 24, .75)',
     backgroundList: 'rgba(21, 23, 24, .65)',
     backgroundModal: 'rgb(50, 51, 51)',

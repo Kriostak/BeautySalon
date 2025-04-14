@@ -1,14 +1,14 @@
 import { Stack } from "expo-router";
 
 import StoreProvider from "@/context/StoreContext";
-import StatusBar from "@/components/StatusBar";
+import NativeBars from "@/components/NativeBars";
 
 export default function RootLayout() {
 
   return (
     <StoreProvider>
       <>
-        <StatusBar />
+        <NativeBars />
         <Stack>
           <Stack.Screen name="index" options={{ headerShown: false }} />
         </Stack>

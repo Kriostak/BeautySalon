@@ -79,7 +79,7 @@ const CustomerForm = (
                 ? formElements.transferredComment : '';
 
         // customers list empty. Just adding first customer and it first section in list
-        if (!customersList) {
+        if (!customersList || !customersList.length) {
             const sectionObj = {
                 weekday: formElements.weekday,
                 day: formElements.day,
@@ -93,6 +93,7 @@ const CustomerForm = (
                     formElements
                 ]
             };
+
             setStoreCustomersList([sectionObj]);
             dispatch({ type: 'mutate', payload: { customersList: [sectionObj] } });
         } else {

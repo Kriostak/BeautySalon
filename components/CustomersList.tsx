@@ -22,7 +22,6 @@ const CustomersList = ({
     showOnlyDay
 }: Props): React.ReactElement => {
     const { selectedMonth, selectedDate, customersList, dispatch } = useContext(StoreContext);
-
     const { t } = useTranslate();
     const { themeStyles } = useTheme();
 
