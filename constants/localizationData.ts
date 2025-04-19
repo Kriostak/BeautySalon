@@ -53,7 +53,10 @@ const EN = {
     'Nw': 'Nw',
     'Cl': 'Cl',
     'Cr': 'Cr',
-    'Tr': 'Tr'
+    'Tr': 'Tr',
+    'Are you sure that you want to clear selected month?': 'Are you sure that you want to clear selected month?',
+    'Yes': 'Yes',
+    'No': 'No',
 }
 
 const UA = {
@@ -110,7 +113,10 @@ const UA = {
     'Nw': 'Н',
     'Cl': 'Зк',
     'Cr': 'Кр',
-    'Tr': 'Пе'
+    'Tr': 'Пе',
+    'Are you sure that you want to clear selected month?': 'Ви впевнені, що хочете очистити вибраний місяць?',
+    'Yes': 'Так',
+    'No': 'Ні',
 };
 
 export type localizationType = typeof EN;

@@ -5,7 +5,7 @@ import { asyncStoreType } from '@/constants/types';
 // get data from local storage
 export const getStoreData = async (dataKey: string): Promise<unknown | null> => {
     let data = null;
-    // await AsyncStorage.clear(); //temp
+
     try {
         const dataValue = await AsyncStorage.getItem(dataKey);
         data = dataValue !== null ? JSON.parse(dataValue) : null;
@@ -36,5 +36,13 @@ export const mergeStoreData = async (
         await AsyncStorage.mergeItem(dataKey, jsonValue);
     } catch (error) {
         console.error('Error during local storage set method: ', error);
+    };
+}
+
+export const deleteStoreData = async (dataKey: string) => {
+    try {
+        await AsyncStorage.removeItem(dataKey);
+    } catch (error) {
+        console.error('Error during local storage remove method: ', error);
     };
 }

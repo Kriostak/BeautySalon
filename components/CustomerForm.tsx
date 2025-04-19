@@ -115,6 +115,7 @@ const CustomerForm = (
                         formElements
                     ]
                 };
+
                 customersListCopy.push(sectionObj);
                 customersListCopy.sort((a, b) => {
                     return a.day - b.day;
@@ -169,7 +170,7 @@ const CustomerForm = (
             }
 
             setStoreCustomersList(customersListCopy);
-            dispatch({ type: 'mutate', payload: { customersList: customersList } });
+            dispatch({ type: 'mutate', payload: { customersList: customersListCopy } });
         }
 
         setFormOpen(false);

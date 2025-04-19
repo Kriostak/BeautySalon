@@ -66,16 +66,12 @@ export const between = (
 }
 
 export const getMultishapePercent = (closedCustomersPercent: number): number => {
-    if (between({ min: 80, max: 100, x: closedCustomersPercent })) {
+    if (between({ min: 75, max: 100, x: closedCustomersPercent })) {
         return .25;
-    } else if (between({ min: 70, max: 79, x: closedCustomersPercent })) {
+    } else if (between({ min: 65, max: 74, x: closedCustomersPercent })) {
         return .22;
-    } else if (between({ min: 60, max: 69, x: closedCustomersPercent })) {
-        return .20;
-    } else if (between({ min: 50, max: 59, x: closedCustomersPercent })) {
-        return .17
     }
-    return .15;
+    return .20;
 }
 
 export const getSalary = ({
