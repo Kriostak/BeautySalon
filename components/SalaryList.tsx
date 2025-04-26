@@ -78,10 +78,12 @@ const SalaryList = ({
                     </View>
                     <View style={{ flex: 1 }}>
                         <Pressable onPress={() => {
+                            const list = value.customers.filter(customer => customer.isClosed);
+
                             setShowAdditionalInfo(true);
-                            setAdditionalInfo(value.customers.filter(customer => customer.isClosed));
+                            setAdditionalInfo(list);
                             setRenderMethod(() => salaryListOrder.isNewInfo.listItem?.(
-                                { showAll: false, itemsLength: value.customers.length }
+                                { showAll: false, itemsLength: list.length }
                             ));
                         }}>
                             <Text style={[styles.salaryText, { flex: 1, textAlign: 'center' }]}>{t('Closed')}</Text>
@@ -90,10 +92,12 @@ const SalaryList = ({
                     </View>
                     <View style={{ flex: 1 }}>
                         <Pressable onPress={() => {
+                            const list = value.customers.filter(customer => !customer.isClosed);
+
                             setShowAdditionalInfo(true);
-                            setAdditionalInfo(value.customers.filter(customer => !customer.isClosed));
+                            setAdditionalInfo(list);
                             setRenderMethod(() => salaryListOrder.isNewInfo.listItem?.(
-                                { showAll: false, itemsLength: value.customers.length }
+                                { showAll: false, itemsLength: list.length }
                             ));
                         }}>
                             <Text style={[styles.salaryText, { flex: 1, textAlign: 'center' }]}>{t('Failed')}</Text>
@@ -187,7 +191,7 @@ const SalaryList = ({
                     </Pressable>
                 </View>
                 {showAdditionalInfo
-                    ? <View style={{ paddingTop: 25, maxHeight: 600 }}>
+                    ? <View style={{ paddingTop: additionalInfo.length && renderMethod !== null ? 25 : 0, maxHeight: 600 }}>
                         {
                             additionalInfo.length && renderMethod !== null
                                 ? <FlatList
@@ -198,7 +202,12 @@ const SalaryList = ({
                                         borderRadius: 10
                                     }}
                                 />
-                                : <Text>{t('No data')}</Text>
+                                : <Text style={{
+                                    textAlign: 'center',
+                                    color: themeStyles.color,
+                                    fontSize: 20,
+                                    paddingVertical: 25,
+                                }}>{t('No Data')}</Text>
                         }
                     </View>
                     : Object.entries(salaryListOrder).map(([key, render]) => {
