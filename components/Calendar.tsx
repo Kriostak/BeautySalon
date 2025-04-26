@@ -9,6 +9,7 @@ import { getStoreCustomersList } from "@/actions/actions";
 import useTranslate from "@/hooks/useTranslate";
 import useTheme from "@/hooks/useTheme";
 import { StoreContext } from "@/context/StoreContext";
+import { getCurrentMonthDaysCount } from "@/utils/utils";
 
 type Props = {
     calendarOpen: boolean,
@@ -41,8 +42,7 @@ const Calendar = ({
         });
     }, [calendarYear, calendarMonth, calendarOpen]);
 
-    const calendarDate = new Date(calendarYear, (calendarMonth + 1), 0);
-    const daysCount = [...Array(calendarDate.getDate()).keys()];
+    const daysCount = getCurrentMonthDaysCount(calendarYear, calendarMonth);
 
     const firstWeekdayIndex = new Date(calendarYear, calendarMonth, 1).getDay();
     const lastWeekdayIndex = new Date(calendarYear, calendarMonth, daysCount.length).getDay();
@@ -78,7 +78,7 @@ const Calendar = ({
         <Modal animationType="slide" transparent={true} visible={calendarOpen}>
             <View style={styles.calendarContainer}>
                 <View style={styles.closeIcon}>
-                    <Pressable onPress={() => {
+                    <Pressable testID="closeCalendar" onPress={() => {
                         setCalendarOpen(false);
                     }}>
                         <Octicons name="x" size={24} style={{ color: themeStyles.color }} />
@@ -87,26 +87,26 @@ const Calendar = ({
 
                 <View style={styles.calendarHeader}>
                     <View style={styles.headerNavigation}>
-                        <Pressable onPress={() => {
+                        <Pressable testID="setPrevYear" onPress={() => {
                             setCalendarYear(calendarYear - 1);
                         }} style={styles.navigation}>
                             <Octicons name="chevron-left" size={24} style={{ color: themeStyles.color }} />
                         </Pressable>
                         <Text style={styles.headerText}>{calendarYear}</Text>
-                        <Pressable onPress={() => {
+                        <Pressable testID="setNextYear" onPress={() => {
                             setCalendarYear(calendarYear + 1);
                         }} style={styles.navigation}>
                             <Octicons name="chevron-right" size={24} style={{ color: themeStyles.color }} />
                         </Pressable>
                     </View>
                     <View style={styles.headerNavigation}>
-                        <Pressable onPress={() => {
+                        <Pressable testID="setPrevMonth" onPress={() => {
                             calendarMonthNavigation(false);
                         }} style={styles.navigation}>
                             <Octicons name="chevron-left" size={24} style={{ color: themeStyles.color }} />
                         </Pressable>
                         <Text style={styles.headerText}>{t(monthsList[calendarMonth])}</Text>
-                        <Pressable onPress={() => {
+                        <Pressable testID="setNextMonth" onPress={() => {
                             calendarMonthNavigation(true);
                         }} style={styles.navigation}>
                             <Octicons name="chevron-right" size={24} style={{ color: themeStyles.color }} />
@@ -158,7 +158,7 @@ const Calendar = ({
                                         setCalendarOpen(false);
                                     }} style={[styles.calendarDay, {
                                         backgroundColor: aditionalStyles?.backgroundColor
-                                    }]}>
+                                    }]} testID={`day-${dayItem + 1}`}>
                                         <Text style={[styles.textCenter]}>{dayItem + 1}</Text>
                                     </Pressable>
                                 </View>

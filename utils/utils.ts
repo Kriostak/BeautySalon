@@ -1,4 +1,4 @@
-import { customersSectionType, salaryObjectType } from "@/constants/types";
+import { customersSectionType, customerType, dayType, salaryObjectType } from "@/constants/types";
 import { CREAM_PERCENT, LASER_PERCENT, TRANSFERRED_PERCENT } from "@/constants/constants";
 
 // it mutate list what you pass
@@ -58,6 +58,10 @@ export const currencyFormat = (num: number): string => {
     return '₴' + num.toFixed(1).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
 }
 
+export const getCurrentMonthDaysCount = (year: number, month: number): number[] => {
+    return [...Array(new Date(year, (month + 1), 0).getDate()).keys()];
+}
+
 export const between = (
     { x, min, max }
         : { x: number; min: number; max: number; }
@@ -85,17 +89,30 @@ export const getSalary = ({
 }): salaryObjectType => {
     let isNewCount = 0;
     let isClosedCount = 0;
+    let isNotClosedCount = 0;
     let isTransferredCount = 0;
     let creamCount = 0;
     let creamSum = 0;
+    const isNewCustomers: Array<Pick<customerType, 'name' | 'isClosed' | 'id' | 'day' | 'weekday'>> = [];
 
     customersList.forEach((section) => {
         section.data.forEach(customer => {
             if (customer.isNew) {
                 isNewCount++;
-            }
-            if (customer.isNew && customer.isClosed) {
-                isClosedCount++;
+
+                if (customer.isClosed) {
+                    isClosedCount++;
+                } else {
+                    isNotClosedCount++;
+                }
+
+                isNewCustomers.push({
+                    name: customer.name,
+                    isClosed: customer.isClosed,
+                    id: customer.id,
+                    day: customer.day,
+                    weekday: customer.weekday
+                });
             }
             if (customer.isTransferred) {
                 isTransferredCount++;
@@ -115,11 +132,16 @@ export const getSalary = ({
     const creamSalary = creamSum * CREAM_PERCENT;
 
     const totalSalary = laserSalary + multishapeSalary + transferredSalary + creamSalary;
+    const isNewInfo = {
+        isNewCount,
+        isClosedCount,
+        isNotClosedCount,
+        customers: isNewCustomers,
+    };
 
     return {
         laserSalary,
-        isNewCount,
-        isClosedCount,
+        isNewInfo,
         multishapeSalary,
         isTransferredCount,
         transferredSalary,

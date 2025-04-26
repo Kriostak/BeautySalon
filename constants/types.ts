@@ -42,13 +42,17 @@ export type customersSectionType = {
 export type salaryObjectType = {
     laserSalary: number,
     multishapeSalary: number,
-    isNewCount: number,
-    isClosedCount: number,
+    isNewInfo: {
+        isNewCount: number,
+        isClosedCount: number,
+        isNotClosedCount: number,
+        customers: Pick<customerType, 'name' | 'isClosed' | 'id' | 'day' | 'weekday'>[]
+    },
     isTransferredCount: number,
     transferredSalary: number,
     creamCount: number,
     creamSalary: number,
-    totalSalary: number
+    totalSalary: number,
 }
 
 export type themeType = 'light' | 'dark';

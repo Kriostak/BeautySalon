@@ -57,6 +57,11 @@ const EN = {
     'Are you sure that you want to clear selected month?': 'Are you sure that you want to clear selected month?',
     'Yes': 'Yes',
     'No': 'No',
+    'New': 'New',
+    'Closed': 'Closed',
+    'Failed': 'Failed',
+    'Back': 'Back',
+    'No data': 'No Data',
 }
 
 const UA = {
@@ -117,6 +122,11 @@ const UA = {
     'Are you sure that you want to clear selected month?': 'Ви впевнені, що хочете очистити вибраний місяць?',
     'Yes': 'Так',
     'No': 'Ні',
+    'New': 'Нові',
+    'Closed': 'Закриті',
+    'Failed': 'Не закриті',
+    'Back': 'Назад',
+    'No data': 'Немає Даних',
 };
 
 export type localizationType = typeof EN;

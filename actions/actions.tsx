@@ -1,4 +1,4 @@
-import { getStoreData } from "./AsyncStorage";
+import { getStoreData } from "@/actions/AsyncStorage";
 
 import { customersSectionType } from '@/constants/types';
 

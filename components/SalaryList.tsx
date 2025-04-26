@@ -1,10 +1,11 @@
-import { Modal, View, Pressable, StyleSheet, Text } from "react-native"
+import { Modal, View, Pressable, StyleSheet, Text, FlatList } from "react-native"
 import Octicons from '@expo/vector-icons/Octicons';
 
 import { salaryObjectType, themeStylesType } from "@/constants/types"
 import useTranslate from "@/hooks/useTranslate";
 import { currencyFormat } from "@/utils/utils";
 import useTheme from "@/hooks/useTheme";
+import { useState } from "react";
 
 type Props = {
     salaryObject: salaryObjectType,
@@ -19,79 +20,192 @@ const SalaryList = ({
 }: Props) => {
     const { t } = useTranslate();
     const { themeStyles } = useTheme();
-
-    const salaryListOrder:
-        Record<keyof typeof salaryObject, { text: string; isCurrency: boolean }>
-        = {
-        laserSalary: {
-            text: t('Salary for Laser'),
-            isCurrency: true,
-        },
-        multishapeSalary: {
-            text: t('Salary for Multishape'),
-            isCurrency: true,
-        },
-        isNewCount: {
-            text: t('Newcomers'),
-            isCurrency: false,
-        },
-        isClosedCount: {
-            text: t('Closed Newcomers'),
-            isCurrency: false,
-        },
-        isTransferredCount: {
-            text: t('Transferred customers'),
-            isCurrency: false,
-        },
-        transferredSalary: {
-            text: t('Salary for Transfers'),
-            isCurrency: true,
-        },
-        creamCount: {
-            text: t('Creams sold'),
-            isCurrency: false,
-        },
-        creamSalary: {
-            text: t('Salary for Cream'),
-            isCurrency: true
-        },
-        totalSalary: {
-            text: t('Salary'),
-            isCurrency: true,
-        }
-    }
+    const [showAdditionalInfo, setShowAdditionalInfo] = useState<boolean>(false);
+    const [additionalInfo, setAdditionalInfo] = useState<any[]>([]);
+    const [renderMethod, setRenderMethod] = useState<(({ item }: any) => React.ReactElement) | null>(null);
 
     const styles = salaryListStyles(themeStyles);
+
+    const InfoWrapper = ({ label, last, children }: {
+        label: string,
+        last?: boolean,
+        children: React.ReactElement
+    }): React.ReactElement => {
+        return <View style={[styles.salaryRow, { borderBottomWidth: last ? 0 : 1 }]}>
+            <Text style={[styles.salaryText, { fontWeight: last ? 600 : 400 }]}>
+                {label}
+            </Text>
+            {children}
+        </View>
+    }
+
+    const salaryListOrder:
+        Record<keyof typeof salaryObject, {
+            info: (args: any) => React.ReactElement,
+            listItem?: (args: any) => any,
+        }>
+        = {
+        laserSalary: {
+            info: (value: typeof salaryObject['laserSalary']) =>
+                <InfoWrapper label={`${t('Salary for Laser')}:`} key='laserSalary'>
+                    <Text style={[styles.salaryText]}>
+                        {currencyFormat(value)}
+                    </Text>
+                </InfoWrapper>
+        },
+        multishapeSalary: {
+            info: (value: typeof salaryObject['multishapeSalary']) =>
+                <InfoWrapper label={`${t('Salary for Multishape')}:`} key='multishapeSalary'>
+                    <Text style={[styles.salaryText]}>
+                        {currencyFormat(value)}
+                    </Text>
+                </InfoWrapper>
+        },
+        isNewInfo: {
+            info: (value: typeof salaryObject['isNewInfo']) =>
+                <View style={[styles.salaryRow, { flexDirection: 'row', gap: 5 }]} key='isNewInfo'>
+                    <View style={{ flex: 1 }}>
+                        <Pressable onPress={() => {
+                            setShowAdditionalInfo(true);
+                            setAdditionalInfo(value.customers);
+                            setRenderMethod(() => salaryListOrder.isNewInfo.listItem?.(
+                                { showAll: true, itemsLength: value.customers.length }
+                            ));
+                        }}>
+                            <Text style={[styles.salaryText, { flex: 1, textAlign: 'center' }]}>{t('New')}</Text>
+                            <Text style={[styles.salaryText, { flex: 1, textAlign: 'center' }]}>{value.isNewCount}</Text>
+                        </Pressable>
+                    </View>
+                    <View style={{ flex: 1 }}>
+                        <Pressable onPress={() => {
+                            setShowAdditionalInfo(true);
+                            setAdditionalInfo(value.customers.filter(customer => customer.isClosed));
+                            setRenderMethod(() => salaryListOrder.isNewInfo.listItem?.(
+                                { showAll: false, itemsLength: value.customers.length }
+                            ));
+                        }}>
+                            <Text style={[styles.salaryText, { flex: 1, textAlign: 'center' }]}>{t('Closed')}</Text>
+                            <Text style={[styles.salaryText, { flex: 1, textAlign: 'center' }]}>{value.isClosedCount}</Text>
+                        </Pressable>
+                    </View>
+                    <View style={{ flex: 1 }}>
+                        <Pressable onPress={() => {
+                            setShowAdditionalInfo(true);
+                            setAdditionalInfo(value.customers.filter(customer => !customer.isClosed));
+                            setRenderMethod(() => salaryListOrder.isNewInfo.listItem?.(
+                                { showAll: false, itemsLength: value.customers.length }
+                            ));
+                        }}>
+                            <Text style={[styles.salaryText, { flex: 1, textAlign: 'center' }]}>{t('Failed')}</Text>
+                            <Text style={[styles.salaryText, { flex: 1, textAlign: 'center' }]}>{value.isNotClosedCount}</Text>
+                        </Pressable>
+                    </View>
+                </View>,
+            listItem: ({ showAll, itemsLength }: { showAll: boolean, itemsLength: number }) => {
+                return ({ item, index }: {
+                    item: typeof salaryObject['isNewInfo']['customers'][number],
+                    index: number
+                }) => {
+                    return (
+                        <View style={[styles.listItem, {
+                            borderBottomWidth: (itemsLength - 1) === index ? 0 : 1,
+                            backgroundColor:
+                                showAll
+                                    ? item.isClosed
+                                        ? 'rgba(6, 182, 0, 0.35)'
+                                        : 'rgba(177, 0, 0, 0.35)'
+                                    : 'transparent',
+                        }]}>
+                            <Text
+                                style={[styles.salaryText, { maxWidth: '65%' }]}
+                            >{item.name}</Text>
+                            <Text
+                                style={[styles.salaryText, { fontSize: 14 }]}
+                            > {`${t(item.weekday)} ${item.day}`}</Text>
+                        </View >
+                    );
+                }
+            }
+        },
+        isTransferredCount: {
+            info: (value: typeof salaryObject['isTransferredCount']) =>
+                <InfoWrapper label={`${t('Transferred customers')}:`} key='isTransferredCount'>
+                    <Text style={[styles.salaryText]}>
+                        {value}
+                    </Text>
+                </InfoWrapper>
+        },
+        transferredSalary: {
+            info: (value: typeof salaryObject['transferredSalary']) =>
+                <InfoWrapper label={`${t('Salary for Transfers')}:`} key='transferredSalary'>
+                    <Text style={[styles.salaryText]}>
+                        {currencyFormat(value)}
+                    </Text>
+                </InfoWrapper>
+        },
+        creamCount: {
+            info: (value: typeof salaryObject['creamCount']) =>
+                <InfoWrapper label={`${t('Creams sold')}:`} key='creamCount'>
+                    <Text style={[styles.salaryText]}>
+                        {value}
+                    </Text>
+                </InfoWrapper>
+        },
+        creamSalary: {
+            info: (value: typeof salaryObject['creamSalary']) =>
+                <InfoWrapper label={`${t('Salary for Cream')}:`} key='creamSalary'>
+                    <Text style={[styles.salaryText]}>
+                        {currencyFormat(value)}
+                    </Text>
+                </InfoWrapper>
+        },
+        totalSalary: {
+            info: (value: typeof salaryObject['totalSalary']) =>
+                <InfoWrapper label={`${t('Salary')}:`} key='totalSalary' last>
+                    <Text style={[styles.salaryText, { fontWeight: 600 }]}>
+                        {currencyFormat(value)}
+                    </Text>
+                </InfoWrapper>
+        },
+    }
 
     return (
         <Modal animationType="slide" transparent={true} visible={salaryListOpen}>
             <View style={styles.container}>
                 <View style={styles.closeIcon}>
                     <Pressable onPress={() => {
-                        setSalaryListOpen(false);
+                        if (showAdditionalInfo) {
+                            setShowAdditionalInfo(false);
+                            setRenderMethod(null);
+                            setAdditionalInfo([]);
+                        } else {
+                            setSalaryListOpen(false);
+                            setShowAdditionalInfo(false);
+                        }
                     }}>
                         <Octicons name="x" size={24} style={{ color: themeStyles.color }} />
                     </Pressable>
                 </View>
-                {Object.entries(salaryListOrder).map(([key, rules]) => {
-                    const typedKey = key as keyof salaryObjectType;
-
-                    return <View key={key} style={[
-                        styles.salaryRow,
+                {showAdditionalInfo
+                    ? <View style={{ paddingTop: 25, maxHeight: 600 }}>
                         {
-                            borderBottomWidth: typedKey === 'totalSalary' ? 0 : 1
+                            additionalInfo.length && renderMethod !== null
+                                ? <FlatList
+                                    data={additionalInfo}
+                                    renderItem={renderMethod}
+                                    keyExtractor={item => item.id}
+                                    style={{
+                                        borderRadius: 10
+                                    }}
+                                />
+                                : <Text>{t('No data')}</Text>
                         }
-                    ]}>
-                        <Text style={[
-                            styles.salaryText,
-                            { fontWeight: typedKey === 'totalSalary' ? 600 : 400 }
-                        ]}>{`${rules.text}:`}</Text>
-                        <Text style={[
-                            styles.salaryText,
-                            { fontWeight: typedKey === 'totalSalary' ? 600 : 400 }
-                        ]}>{rules.isCurrency ? currencyFormat(salaryObject[typedKey]) : salaryObject[typedKey]}</Text>
-                    </View>;
-                })}
+                    </View>
+                    : Object.entries(salaryListOrder).map(([key, render]) => {
+                        const typedKey = key as keyof salaryObjectType;
+
+                        return render.info(salaryObject[typedKey]);
+                    })}
             </View>
         </Modal>
     );
@@ -119,7 +233,7 @@ const salaryListStyles = (themeStyles: themeStylesType) => StyleSheet.create({
         elevation: 14,
         borderWidth: 1,
         borderColor: themeStyles.border,
-        gap: 10
+        gap: 10,
     },
     closeIcon: {
         position: 'absolute',
@@ -130,12 +244,22 @@ const salaryListStyles = (themeStyles: themeStylesType) => StyleSheet.create({
     salaryRow: {
         alignItems: 'center',
         borderStyle: 'dashed',
-        borderColor: themeStyles.border
+        borderColor: themeStyles.border,
+        borderBottomWidth: 1,
     },
     salaryText: {
         fontSize: 16,
-        color: themeStyles.color
-    }
+        color: themeStyles.color,
+    },
+    listItem: {
+        padding: 10,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        borderBottomWidth: 1,
+        borderStyle: "dashed",
+        borderBottomColor: themeStyles.border
+    },
 });
 
 export default SalaryList;
