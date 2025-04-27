@@ -42,7 +42,7 @@ const SalaryList = ({
     const salaryListOrder:
         Record<keyof typeof salaryObject, {
             info: (args: any) => React.ReactElement,
-            listItem?: (args: any) => any,
+            listItem?: (args?: any) => any,
         }>
         = {
         laserSalary: {
@@ -111,7 +111,7 @@ const SalaryList = ({
                     index: number
                 }) => {
                     return (
-                        <View style={[styles.listItem, {
+                        <View style={[styles.listItem, styles.row, {
                             borderBottomWidth: (itemsLength - 1) === index ? 0 : 1,
                             backgroundColor:
                                 showAll
@@ -147,21 +147,78 @@ const SalaryList = ({
                     </Text>
                 </InfoWrapper>
         },
-        creamCount: {
-            info: (value: typeof salaryObject['creamCount']) =>
-                <InfoWrapper label={`${t('Creams sold')}:`} key='creamCount'>
-                    <Text style={[styles.salaryText]}>
-                        {value}
-                    </Text>
-                </InfoWrapper>
-        },
-        creamSalary: {
-            info: (value: typeof salaryObject['creamSalary']) =>
-                <InfoWrapper label={`${t('Salary for Cream')}:`} key='creamSalary'>
-                    <Text style={[styles.salaryText]}>
-                        {currencyFormat(value)}
-                    </Text>
-                </InfoWrapper>
+        creamInfo: {
+            info: (value: typeof salaryObject['creamInfo']) => {
+                return (
+                    <Pressable onPress={() => {
+                        setShowAdditionalInfo(true);
+                        setAdditionalInfo(value.creamSells);
+                        setRenderMethod(() => salaryListOrder.creamInfo.listItem?.(
+                            value.creamSells.length
+                        ));
+                    }} key='creamInfo'>
+                        <View style={[styles.salaryRow, { flexDirection: 'row', gap: 5, justifyContent: 'space-between' }]}>
+                            <View>
+                                <Text style={[styles.salaryText, { flex: 1, textAlign: 'center' }]}>{t('Creams sold')}</Text>
+                                <Text style={[styles.salaryText, { flex: 1, textAlign: 'center' }]}>{value.creamCount}</Text>
+                            </View>
+                            <View>
+                                <Text style={[styles.salaryText, { flex: 1, textAlign: 'center' }]}>{t('Salary for Cream')}</Text>
+                                <Text style={[styles.salaryText, { flex: 1, textAlign: 'center' }]}>{currencyFormat(value.creamSalary)}</Text>
+                            </View>
+                        </View>
+                    </Pressable>
+                );
+            },
+            listItem: (itemsLength: number) => ({ item, index }: {
+                item: typeof salaryObject['creamInfo']['creamSells'][number],
+                index: number
+            }) => {
+                let creamSum = 0;
+                return (
+                    <View style={[styles.listItem, { flexDirection: 'column', borderBottomWidth: (itemsLength - 1) === index ? 0 : 1 }]}>
+                        <View style={[styles.row, {
+                            borderBottomWidth: 1,
+                            borderBottomColor: themeStyles.border
+                        }]}>
+                            <Text
+                                style={[styles.salaryText, { maxWidth: '65%', width: '100%' }]}
+                            >{item.name}</Text>
+                            <Text
+                                style={[styles.salaryText, { fontSize: 14, maxWidth: '35%', width: '100%', textAlign: 'right' }]}
+                            > {`${t(item.weekday)} ${item.day}`}</Text>
+                        </View>
+                        <View>
+                            {item.creamSells.map((cream, index) => {
+                                creamSum += cream.price;
+
+                                return (
+                                    <View style={[styles.row, {
+                                        width: '100%'
+                                    }]} key={index}>
+                                        <Text
+                                            style={[styles.salaryText, { fontSize: 13 }]}
+                                        >{cream.name}</Text>
+                                        <Text
+                                            style={[styles.salaryText, { fontSize: 13 }]}
+                                        >{currencyFormat(cream.price)}</Text>
+                                    </View>
+                                );
+                            })}
+                        </View>
+                        {item.creamSells.length > 1 &&
+                            <View style={[styles.row]}>
+                                <Text
+                                    style={[styles.salaryText, { fontSize: 13, fontWeight: 500 }]}
+                                >{`${t('Summary')}:`}</Text>
+                                <Text
+                                    style={[styles.salaryText, { fontSize: 13, fontWeight: 500 }]}
+                                >{currencyFormat(creamSum)}</Text>
+                            </View>
+                        }
+                    </View >
+                );
+            }
         },
         totalSalary: {
             info: (value: typeof salaryObject['totalSalary']) =>
@@ -207,7 +264,9 @@ const SalaryList = ({
                                     color: themeStyles.color,
                                     fontSize: 20,
                                     paddingVertical: 25,
-                                }}>{t('No Data')}</Text>
+                                }}>
+                                    {t('No Data')}
+                                </Text>
                         }
                     </View>
                     : Object.entries(salaryListOrder).map(([key, render]) => {
@@ -260,11 +319,13 @@ const salaryListStyles = (themeStyles: themeStylesType) => StyleSheet.create({
         fontSize: 16,
         color: themeStyles.color,
     },
-    listItem: {
-        padding: 10,
+    row: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
+    },
+    listItem: {
+        padding: 10,
         borderBottomWidth: 1,
         borderStyle: "dashed",
         borderBottomColor: themeStyles.border

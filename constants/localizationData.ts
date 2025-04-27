@@ -62,6 +62,8 @@ const EN = {
     'Failed': 'Failed',
     'Back': 'Back',
     'No Data': 'No Data',
+    'Cream Name': 'Cream Name',
+    'Summary': 'Summary',
 }
 
 const UA = {
@@ -127,6 +129,8 @@ const UA = {
     'Failed': 'Не закриті',
     'Back': 'Назад',
     'No Data': 'Немає Даних',
+    'Cream Name': 'Назва Крему',
+    'Summary': 'Сумма',
 };
 
 export type localizationType = typeof EN;

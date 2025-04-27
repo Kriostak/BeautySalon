@@ -1,15 +1,17 @@
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect, useContext, useRef } from 'react';
 import { Modal, View, TextInput, Text, Pressable, StyleSheet } from "react-native";
 import Checkbox from 'expo-checkbox';
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
 import Octicons from '@expo/vector-icons/Octicons';
 
-import { customersSectionType, customerType, themeStylesType } from "@/constants/types";
+import { customersSectionType, customerType, themeStylesType, creamValType } from "@/constants/types";
 import { removeCustomerFromList, recalcSectionSum } from '@/utils/utils';
 import { weekDaysList, monthsList } from '@/constants/constants';
 import useTranslate from '@/hooks/useTranslate';
 import useTheme from '@/hooks/useTheme';
 import { StoreContext } from '@/context/StoreContext';
+
+import CreamFields from './CreamFields';
 
 type Props = {
     formOpen: boolean;
@@ -50,13 +52,15 @@ const CustomerForm = (
         isClosed: false,
         isTransferred: false,
         transferredComment: '',
-        creamPrice: 0,
+        creamSells: [],
         id: new Date().getTime(),
     }
-    const [formElements, setFormElements] = useState<typeof basicFormValues>(basicFormValues);
+    const [formElements, setFormElements] = useState<customerType>(basicFormValues);
+    const [creamValue, setCreamValue] = useState<creamValType>({ name: '', price: 0 });
 
     useEffect(() => {
         setFormElements(customer ?? basicFormValues);
+        setCreamValue({ name: '', price: 0 });
     }, [formOpen]);
 
     const [isValid, setIsValid] = useState<boolean>(true);
@@ -64,7 +68,8 @@ const CustomerForm = (
     const submitForm = () => {
         const formValid = formElements.day !== 0
             && !!formElements.weekday
-            && formElements.name.trim().length > 0;
+            && formElements.name.trim().length > 0
+            && creamValue.name === '' && creamValue.price === 0;
 
         setIsValid(formValid);
 
@@ -88,7 +93,7 @@ const CustomerForm = (
                 isNewCount: formElements.isNew ? 1 : 0,
                 isClosedCount: formElements.isClosed ? 1 : 0,
                 transferredCount: formElements.isTransferred ? 1 : 0,
-                creamsSold: formElements.creamPrice > 0 ? 1 : 0,
+                creamsSold: formElements.creamSells.length > 0 ? 1 : 0,
                 data: [
                     formElements
                 ]
@@ -110,7 +115,7 @@ const CustomerForm = (
                     isNewCount: formElements.isNew ? 1 : 0,
                     isClosedCount: formElements.isClosed ? 1 : 0,
                     transferredCount: formElements.isTransferred ? 1 : 0,
-                    creamsSold: formElements.creamPrice > 0 ? 1 : 0,
+                    creamsSold: formElements.creamSells.length > 0 ? 1 : 0,
                     data: [
                         formElements
                     ]
@@ -318,21 +323,13 @@ const CustomerForm = (
                         />}
                     </View>
 
-                    <View style={styles.formItem}>
-                        <TextInput
-                            inputMode='decimal'
-                            placeholder={t('Cream Price')}
-                            placeholderTextColor={themeStyles.color}
-                            value={formElements.creamPrice === 0 ? '' : String(formElements.creamPrice)}
-                            onChangeText={(val) => {
-                                setFormElements(old => ({
-                                    ...old,
-                                    creamPrice: Number(val)
-                                }))
-                            }}
-                            style={styles.textInput}
-                        />
-                    </View>
+                    <CreamFields
+                        formElements={formElements}
+                        setFormElements={setFormElements}
+                        creamValue={creamValue}
+                        setCreamValue={setCreamValue}
+                        isValid={isValid}
+                    />
 
                 </View>
                 <View style={styles.submitContainer}>
@@ -348,6 +345,7 @@ const CustomerForm = (
 const formStyles = (themeStyles: themeStylesType) => StyleSheet.create({
     container: {
         width: '90%',
+
         maxWidth: 1000,
         backgroundColor: themeStyles.backgroundModal,
         borderRadius: 18,
@@ -383,6 +381,23 @@ const formStyles = (themeStyles: themeStylesType) => StyleSheet.create({
     },
     formItem: {
         paddingVertical: 15
+    },
+    creamField: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 5,
+        justifyContent: 'space-between',
+        paddingVertical: 5,
+    },
+    button: {
+        borderWidth: 1,
+        borderRadius: 5,
+        borderColor: themeStyles.border,
+        color: themeStyles.color,
+        paddingTop: 4,
+        paddingLeft: 7,
+        paddingRight: 6,
+        paddingBottom: 3,
     },
     textInput: {
         paddingVertical: 5,

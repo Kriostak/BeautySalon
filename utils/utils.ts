@@ -41,7 +41,7 @@ export const recalcSectionSum = (sectionObj: customersSectionType) => {
         if (customerItem.isTransferred) {
             transferredCount++;
         }
-        if (customerItem.creamPrice > 0) {
+        if (customerItem.creamSells.length > 0) {
             creamsSold++;
         }
     });
@@ -93,6 +93,7 @@ export const getSalary = ({
     let isTransferredCount = 0;
     let creamCount = 0;
     let creamSum = 0;
+    const creamSells: Array<Pick<customerType, 'name' | 'id' | 'day' | 'weekday' | 'creamSells'>> = [];
     const isNewCustomers: Array<Pick<customerType, 'name' | 'isClosed' | 'id' | 'day' | 'weekday'>> = [];
 
     customersList.forEach((section) => {
@@ -117,9 +118,16 @@ export const getSalary = ({
             if (customer.isTransferred) {
                 isTransferredCount++;
             }
-            if (customer.creamPrice !== 0) {
-                creamCount++;
-                creamSum += customer.creamPrice;
+            if (customer.creamSells.length) {
+                creamCount += customer.creamSells.length;
+                creamSum += customer.creamSells.reduce((prev, curr) => prev + curr.price, 0);
+                creamSells.push({
+                    name: customer.name,
+                    id: customer.id,
+                    day: customer.day,
+                    weekday: customer.weekday,
+                    creamSells: customer.creamSells
+                })
             }
         });
     });
@@ -138,6 +146,11 @@ export const getSalary = ({
         isNotClosedCount,
         customers: isNewCustomers,
     };
+    const creamInfo = {
+        creamSalary,
+        creamCount,
+        creamSells
+    };
 
     return {
         laserSalary,
@@ -145,8 +158,7 @@ export const getSalary = ({
         multishapeSalary,
         isTransferredCount,
         transferredSalary,
-        creamCount,
-        creamSalary,
-        totalSalary
+        creamInfo,
+        totalSalary,
     };
 }

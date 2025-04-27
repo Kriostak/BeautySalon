@@ -22,7 +22,10 @@ export type customerType = {
     isClosed: boolean;
     isTransferred: boolean;
     transferredComment: string;
-    creamPrice: number;
+    creamSells: {
+        name: string,
+        price: number,
+    }[];
     day: number;
     weekday: dayType;
 }
@@ -50,8 +53,11 @@ export type salaryObjectType = {
     },
     isTransferredCount: number,
     transferredSalary: number,
-    creamCount: number,
-    creamSalary: number,
+    creamInfo: {
+        creamCount: number,
+        creamSalary: number,
+        creamSells: Pick<customerType, 'name' | 'id' | 'day' | 'weekday' | 'creamSells'>[]
+    }
     totalSalary: number,
 }
 
@@ -67,3 +73,8 @@ export type themeStylesType = {
     tintSegmentControl: string,
     color: string
 };
+
+export type creamValType = {
+    name: string,
+    price: number,
+}
