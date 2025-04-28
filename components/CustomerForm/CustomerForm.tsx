@@ -1,17 +1,19 @@
-import { useState, useEffect, useContext, useRef } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { Modal, View, TextInput, Text, Pressable, StyleSheet } from "react-native";
-import Checkbox from 'expo-checkbox';
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
 import Octicons from '@expo/vector-icons/Octicons';
 
 import { customersSectionType, customerType, themeStylesType, creamValType } from "@/constants/types";
-import { removeCustomerFromList, recalcSectionSum } from '@/utils/utils';
+
 import { weekDaysList, monthsList } from '@/constants/constants';
 import useTranslate from '@/hooks/useTranslate';
 import useTheme from '@/hooks/useTheme';
 import { StoreContext } from '@/context/StoreContext';
 
-import CreamFields from './CreamFields';
+import CreamFields from './CustomerFormFields/CreamFields';
+import IsNewCheckboxes from './CustomerFormFields/IsNewCheckboxes';
+import IsTransferredField from './CustomerFormFields/IsTransferedField';
+import useSubmitForm from '@/hooks/useSubmitForm';
 
 type Props = {
     formOpen: boolean;
@@ -65,128 +67,20 @@ const CustomerForm = (
 
     const [isValid, setIsValid] = useState<boolean>(true);
 
-    const submitForm = () => {
-        const formValid = formElements.day !== 0
-            && !!formElements.weekday
-            && formElements.name.trim().length > 0
-            && creamValue.name === '' && creamValue.price === 0;
-
-        setIsValid(formValid);
-
-        if (!formValid) return;
-
-        const isMh = formElements.type === 0;
-
-        // durring submit remove 'transferred comment' if transferred checkbox is unchecked
-        // it prevent to saving data what will be not visible to user
-        formElements.transferredComment =
-            formElements.isTransferred
-                ? formElements.transferredComment : '';
-
-        // customers list empty. Just adding first customer and it first section in list
-        if (!customersList || !customersList.length) {
-            const sectionObj = {
-                weekday: formElements.weekday,
-                day: formElements.day,
-                mhSum: isMh ? formElements.price : 0,
-                lSum: !isMh ? formElements.price : 0,
-                isNewCount: formElements.isNew ? 1 : 0,
-                isClosedCount: formElements.isClosed ? 1 : 0,
-                transferredCount: formElements.isTransferred ? 1 : 0,
-                creamsSold: formElements.creamSells.length > 0 ? 1 : 0,
-                data: [
-                    formElements
-                ]
-            };
-
-            setStoreCustomersList([sectionObj]);
-            dispatch({ type: 'mutate', payload: { customersList: [sectionObj] } });
-        } else {
-            const customersListCopy = [...customersList];
-            const sectionIndex = customersListCopy?.findIndex(section => section.day === formElements.day);
-
-            // section doesn't exist. Add section with customer and sort it
-            if (sectionIndex === -1) {
-                const sectionObj = {
-                    weekday: formElements.weekday,
-                    day: formElements.day,
-                    mhSum: isMh ? formElements.price : 0,
-                    lSum: !isMh ? formElements.price : 0,
-                    isNewCount: formElements.isNew ? 1 : 0,
-                    isClosedCount: formElements.isClosed ? 1 : 0,
-                    transferredCount: formElements.isTransferred ? 1 : 0,
-                    creamsSold: formElements.creamSells.length > 0 ? 1 : 0,
-                    data: [
-                        formElements
-                    ]
-                };
-
-                customersListCopy.push(sectionObj);
-                customersListCopy.sort((a, b) => {
-                    return a.day - b.day;
-                });
-            } else {
-                const sectionObj = customersListCopy[sectionIndex];
-
-                // edit mode
-                if (customer?.id) {
-                    // section of customer was changed - remove customer of old section
-                    // check if old section is empty, if so, remove it too
-                    if (customer?.day !== formElements.day) {
-                        const oldSectionIndex = customersListCopy?.findIndex(section => section.day === customer?.day);
-                        const oldCustomerIndex = customersListCopy[oldSectionIndex].data.findIndex(customerItem => customerItem.id === customer?.id);
-                        const oldCustomerItem = customersListCopy[oldSectionIndex].data[oldCustomerIndex];
-                        const oldIsMh = oldCustomerItem.type === 0;
-
-                        if (oldIsMh) {
-                            customersListCopy[oldSectionIndex].mhSum -= oldCustomerItem.price;
-                        } else {
-                            customersListCopy[oldSectionIndex].lSum -= oldCustomerItem.price;
-                        }
-
-                        // it mutate list what you pass
-                        removeCustomerFromList({
-                            list: customersListCopy,
-                            customerIndex: oldCustomerIndex,
-                            sectionIndex: oldSectionIndex
-                        });
-
-                        sectionObj.data.unshift(formElements);
-
-                        recalcSectionSum(sectionObj);
-                    }
-                    // editing customer without change of section
-                    else {
-                        const customerIndex = sectionObj.data.findIndex(customerItem => customerItem.id === customer.id);
-                        sectionObj.data[customerIndex] = formElements;
-
-                        recalcSectionSum(sectionObj);
-                    }
-                }
-                // adding new customer to existing section
-                else {
-                    if (isMh) {
-                        sectionObj.mhSum += formElements.price;
-                    } else {
-                        sectionObj.lSum += formElements.price;
-                    }
-                    sectionObj.data.unshift(formElements);
-                }
-            }
-
-            setStoreCustomersList(customersListCopy);
-            dispatch({ type: 'mutate', payload: { customersList: customersListCopy } });
-        }
-
-        setFormOpen(false);
-    }
+    const submitForm = useSubmitForm({
+        formElements,
+        creamValue,
+        setIsValid,
+        setStoreCustomersList,
+        setFormOpen,
+    })
 
     const toggleCheckbox = ({ val, key, isNewToggle }: { val: boolean, key: string, isNewToggle?: boolean }) => {
         setFormElements(old => ({
             ...old,
             [key]: val
         }))
-        // only for isClosed checkbox. It related to isNew
+        // only for 'isClosed' checkbox. It related to 'isNew'
         if (isNewToggle && !val) {
             setFormElements(old => ({
                 ...old,
@@ -256,72 +150,16 @@ const CustomerForm = (
                         />
                     </View>
 
-                    <View style={[styles.formItem, {
-                        flexDirection: 'row',
-                        justifyContent: 'space-between',
-                    }]}>
-                        <Pressable onPress={() => {
-                            toggleCheckbox({ val: !formElements.isNew, key: 'isNew', isNewToggle: true });
-                        }}>
-                            <View style={styles.checkboxWrapper}>
-                                <Checkbox
-                                    style={{ borderColor: themeStyles.border }}
-                                    value={formElements.isNew}
-                                    onValueChange={(val) => {
-                                        toggleCheckbox({ val, key: 'isNew', isNewToggle: true });
-                                    }}
-                                />
-                                <Text style={styles.checkboxText}>{t('Is New')}</Text>
-                            </View>
-                        </Pressable>
+                    <IsNewCheckboxes
+                        formElements={formElements}
+                        toggleCheckbox={toggleCheckbox}
+                    />
 
-                        <Pressable onPress={() => {
-                            formElements.isNew && toggleCheckbox({ val: !formElements.isClosed, key: 'isClosed' });
-                        }}>
-                            <View style={styles.checkboxWrapper}>
-                                <Checkbox
-                                    style={{
-                                        borderColor: themeStyles.border,
-                                        opacity: !formElements.isNew ? .5 : 1
-                                    }}
-                                    value={formElements.isClosed}
-                                    onValueChange={(val) => {
-                                        toggleCheckbox({ val, key: 'isClosed' });
-                                    }}
-                                    disabled={!formElements.isNew}
-                                />
-                                <Text style={[styles.checkboxText, { opacity: formElements.isNew ? 1 : .5 }]}>{t('Is Closed')}</Text>
-                            </View>
-                        </Pressable>
-                    </View>
-
-                    <View style={styles.formItem}>
-                        <Pressable onPress={() => {
-                            toggleCheckbox({ val: !formElements.isTransferred, key: 'isTransferred' });
-                        }}>
-                            <View style={styles.checkboxWrapper}>
-                                <Checkbox
-                                    style={{ borderColor: themeStyles.border }}
-                                    value={formElements.isTransferred}
-                                    onValueChange={(val) => {
-                                        toggleCheckbox({ val, key: 'isTransferred' });
-                                    }}
-                                />
-                                <Text style={styles.checkboxText}>{t('Is Transferred')}</Text>
-                            </View>
-                        </Pressable>
-                        {formElements.isTransferred && <TextInput
-                            multiline
-                            numberOfLines={4}
-                            maxLength={255}
-                            onChangeText={(val) => setFormElements(old => ({
-                                ...old,
-                                transferredComment: val
-                            }))}
-                            value={formElements.transferredComment}
-                            style={styles.textInput}
-                        />}
-                    </View>
+                    <IsTransferredField
+                        formElements={formElements}
+                        setFormElements={setFormElements}
+                        toggleCheckbox={toggleCheckbox}
+                    />
 
                     <CreamFields
                         formElements={formElements}
@@ -345,7 +183,6 @@ const CustomerForm = (
 const formStyles = (themeStyles: themeStylesType) => StyleSheet.create({
     container: {
         width: '90%',
-
         maxWidth: 1000,
         backgroundColor: themeStyles.backgroundModal,
         borderRadius: 18,
@@ -382,23 +219,6 @@ const formStyles = (themeStyles: themeStylesType) => StyleSheet.create({
     formItem: {
         paddingVertical: 15
     },
-    creamField: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 5,
-        justifyContent: 'space-between',
-        paddingVertical: 5,
-    },
-    button: {
-        borderWidth: 1,
-        borderRadius: 5,
-        borderColor: themeStyles.border,
-        color: themeStyles.color,
-        paddingTop: 4,
-        paddingLeft: 7,
-        paddingRight: 6,
-        paddingBottom: 3,
-    },
     textInput: {
         paddingVertical: 5,
         paddingHorizontal: 5,
@@ -406,14 +226,6 @@ const formStyles = (themeStyles: themeStylesType) => StyleSheet.create({
         borderRadius: 5,
         borderColor: themeStyles.border,
         color: themeStyles.color,
-    },
-    checkboxWrapper: {
-        flexDirection: 'row',
-        alignItems: 'center'
-    },
-    checkboxText: {
-        paddingLeft: 5,
-        color: themeStyles.color
     },
     submitContainer: {
         alignItems: 'center'

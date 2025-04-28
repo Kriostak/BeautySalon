@@ -40,7 +40,7 @@ const SalaryList = ({
     }
 
     const salaryListOrder:
-        Record<keyof typeof salaryObject, {
+        Record<keyof salaryObjectType, {
             info: (args: any) => React.ReactElement,
             listItem?: (args?: any) => any,
         }>
@@ -63,49 +63,34 @@ const SalaryList = ({
         },
         isNewInfo: {
             info: (value: typeof salaryObject['isNewInfo']) =>
-                <View style={[styles.salaryRow, { flexDirection: 'row', gap: 5 }]} key='isNewInfo'>
-                    <View style={{ flex: 1 }}>
-                        <Pressable onPress={() => {
-                            setShowAdditionalInfo(true);
-                            setAdditionalInfo(value.customers);
-                            setRenderMethod(() => salaryListOrder.isNewInfo.listItem?.(
-                                { showAll: true, itemsLength: value.customers.length }
-                            ));
-                        }}>
+                <View style={[styles.salaryRow]} key='isNewInfo'>
+                    <View style={styles.row}>
+                        <View style={{ flex: 1 }}>
                             <Text style={[styles.salaryText, { flex: 1, textAlign: 'center' }]}>{t('New')}</Text>
                             <Text style={[styles.salaryText, { flex: 1, textAlign: 'center' }]}>{value.isNewCount}</Text>
-                        </Pressable>
-                    </View>
-                    <View style={{ flex: 1 }}>
-                        <Pressable onPress={() => {
-                            const list = value.customers.filter(customer => customer.isClosed);
-
-                            setShowAdditionalInfo(true);
-                            setAdditionalInfo(list);
-                            setRenderMethod(() => salaryListOrder.isNewInfo.listItem?.(
-                                { showAll: false, itemsLength: list.length }
-                            ));
-                        }}>
+                        </View>
+                        <View style={{ flex: 1 }}>
                             <Text style={[styles.salaryText, { flex: 1, textAlign: 'center' }]}>{t('Closed')}</Text>
                             <Text style={[styles.salaryText, { flex: 1, textAlign: 'center' }]}>{value.isClosedCount}</Text>
-                        </Pressable>
-                    </View>
-                    <View style={{ flex: 1 }}>
-                        <Pressable onPress={() => {
-                            const list = value.customers.filter(customer => !customer.isClosed);
-
-                            setShowAdditionalInfo(true);
-                            setAdditionalInfo(list);
-                            setRenderMethod(() => salaryListOrder.isNewInfo.listItem?.(
-                                { showAll: false, itemsLength: list.length }
-                            ));
-                        }}>
+                        </View>
+                        <View style={{ flex: 1 }}>
                             <Text style={[styles.salaryText, { flex: 1, textAlign: 'center' }]}>{t('Failed')}</Text>
                             <Text style={[styles.salaryText, { flex: 1, textAlign: 'center' }]}>{value.isNotClosedCount}</Text>
-                        </Pressable>
+                        </View>
                     </View>
-                </View>,
-            listItem: ({ showAll, itemsLength }: { showAll: boolean, itemsLength: number }) => {
+                    <Pressable onPress={() => {
+                        setShowAdditionalInfo(true);
+                        setAdditionalInfo(value.customers);
+                        setRenderMethod(() => salaryListOrder.isNewInfo.listItem?.(
+                            { itemsLength: value.customers.length }
+                        ));
+                    }}
+                        style={[styles.button]}
+                    >
+                        <Text style={[styles.salaryText]}>{t('Detail')}</Text>
+                    </Pressable>
+                </View >,
+            listItem: ({ itemsLength }: { itemsLength: number }) => {
                 return ({ item, index }: {
                     item: typeof salaryObject['isNewInfo']['customers'][number],
                     index: number
@@ -113,12 +98,9 @@ const SalaryList = ({
                     return (
                         <View style={[styles.listItem, styles.row, {
                             borderBottomWidth: (itemsLength - 1) === index ? 0 : 1,
-                            backgroundColor:
-                                showAll
-                                    ? item.isClosed
-                                        ? 'rgba(6, 182, 0, 0.35)'
-                                        : 'rgba(177, 0, 0, 0.35)'
-                                    : 'transparent',
+                            backgroundColor: item.isClosed
+                                ? 'rgba(6, 182, 0, 0.35)'
+                                : 'rgba(177, 0, 0, 0.35)',
                         }]}>
                             <Text
                                 style={[styles.salaryText, { maxWidth: '65%' }]}
@@ -131,33 +113,59 @@ const SalaryList = ({
                 }
             }
         },
-        isTransferredCount: {
-            info: (value: typeof salaryObject['isTransferredCount']) =>
-                <InfoWrapper label={`${t('Transferred customers')}:`} key='isTransferredCount'>
-                    <Text style={[styles.salaryText]}>
-                        {value}
-                    </Text>
-                </InfoWrapper>
-        },
-        transferredSalary: {
-            info: (value: typeof salaryObject['transferredSalary']) =>
-                <InfoWrapper label={`${t('Salary for Transfers')}:`} key='transferredSalary'>
-                    <Text style={[styles.salaryText]}>
-                        {currencyFormat(value)}
-                    </Text>
-                </InfoWrapper>
+        transferredInfo: {
+            info: (value: typeof salaryObject['transferredInfo']) =>
+                <View style={[styles.salaryRow]} key='transferredInfo'>
+                    <View style={styles.row}>
+                        <View style={{ flex: 1 }}>
+                            <Text style={[styles.salaryText, { flex: 1, textAlign: 'center' }]}>{t('Transferred customers')}</Text>
+                            <Text style={[styles.salaryText, { flex: 1, textAlign: 'center' }]}>{value.isTransferredCount}</Text>
+                        </View>
+                        <View style={{ flex: 1 }}>
+                            <Text style={[styles.salaryText, { flex: 1, textAlign: 'center' }]}>{t('Salary for Transfers')}</Text>
+                            <Text style={[styles.salaryText, { flex: 1, textAlign: 'center' }]}>{currencyFormat(value.transferredSalary)}</Text>
+                        </View>
+                    </View>
+                    <Pressable onPress={() => {
+                        setShowAdditionalInfo(true);
+                        setAdditionalInfo(value.transferredCustomers);
+                        setRenderMethod(() => salaryListOrder.transferredInfo.listItem?.(
+                            { itemsLength: value.transferredCustomers.length }
+                        ));
+                    }}
+                        style={[styles.button]}
+                    >
+                        <Text style={[styles.salaryText]}>{t('Detail')}</Text>
+                    </Pressable>
+                </View >,
+            listItem: ({ itemsLength }: { itemsLength: number }) => {
+                return ({ item, index }: {
+                    item: typeof salaryObject['transferredInfo']['transferredCustomers'][number],
+                    index: number
+                }) => {
+                    return (
+                        <View style={[styles.listItem, {
+                            borderBottomWidth: (itemsLength - 1) === index ? 0 : 1,
+                        }]}>
+                            <View style={[styles.row]}>
+                                <Text
+                                    style={[styles.salaryText, { maxWidth: '65%' }]}
+                                >{item.name}</Text>
+                                <Text
+                                    style={[styles.salaryText, { fontSize: 14 }]}
+                                > {`${t(item.weekday)} ${item.day}`}</Text>
+                            </View>
+                            <Text style={[styles.salaryText, { textAlign: 'center' }]}>{item.transferredComment}</Text>
+                        </View>
+                    );
+                }
+            }
         },
         creamInfo: {
             info: (value: typeof salaryObject['creamInfo']) => {
                 return (
-                    <Pressable onPress={() => {
-                        setShowAdditionalInfo(true);
-                        setAdditionalInfo(value.creamSells);
-                        setRenderMethod(() => salaryListOrder.creamInfo.listItem?.(
-                            value.creamSells.length
-                        ));
-                    }} key='creamInfo'>
-                        <View style={[styles.salaryRow, { flexDirection: 'row', gap: 5, justifyContent: 'space-between' }]}>
+                    <View style={[styles.salaryRow]} key='creamInfo'>
+                        <View style={[styles.row, { gap: 15 }]}>
                             <View>
                                 <Text style={[styles.salaryText, { flex: 1, textAlign: 'center' }]}>{t('Creams sold')}</Text>
                                 <Text style={[styles.salaryText, { flex: 1, textAlign: 'center' }]}>{value.creamCount}</Text>
@@ -167,7 +175,18 @@ const SalaryList = ({
                                 <Text style={[styles.salaryText, { flex: 1, textAlign: 'center' }]}>{currencyFormat(value.creamSalary)}</Text>
                             </View>
                         </View>
-                    </Pressable>
+                        <Pressable onPress={() => {
+                            setShowAdditionalInfo(true);
+                            setAdditionalInfo(value.creamSells);
+                            setRenderMethod(() => salaryListOrder.creamInfo.listItem?.(
+                                value.creamSells.length
+                            ));
+                        }}
+                            style={[styles.button]}
+                        >
+                            <Text style={[styles.salaryText]}>{t('Detail')}</Text>
+                        </Pressable>
+                    </View>
                 );
             },
             listItem: (itemsLength: number) => ({ item, index }: {
@@ -324,11 +343,19 @@ const salaryListStyles = (themeStyles: themeStylesType) => StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
     },
+    button: {
+        borderWidth: 1,
+        borderRadius: 5,
+        borderColor: themeStyles.border,
+        paddingHorizontal: 10,
+        paddingVertical: 5,
+        marginVertical: 10,
+    },
     listItem: {
         padding: 10,
         borderBottomWidth: 1,
         borderStyle: "dashed",
-        borderBottomColor: themeStyles.border
+        borderBottomColor: themeStyles.border,
     },
 });
 

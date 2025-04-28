@@ -1,4 +1,4 @@
-import { customersSectionType, customerType, dayType, salaryObjectType } from "@/constants/types";
+import { customersSectionType, customerType, salaryObjectType, salaryObjectCustomerType } from "@/constants/types";
 import { CREAM_PERCENT, LASER_PERCENT, TRANSFERRED_PERCENT } from "@/constants/constants";
 
 // it mutate list what you pass
@@ -20,7 +20,9 @@ export const removeCustomerFromList = ({
 // mutate sectionObj what you pass
 export const recalcSectionSum = (sectionObj: customersSectionType) => {
     let newMhSum = 0;
+    let newMhCount = 0;
     let newLSum = 0;
+    let newLCount = 0;
     let isNewCount = 0;
     let isClosedCount = 0;
     let transferredCount = 0;
@@ -29,8 +31,10 @@ export const recalcSectionSum = (sectionObj: customersSectionType) => {
     sectionObj.data.forEach(customerItem => {
         if (customerItem.type === 0) {
             newMhSum += customerItem.price;
+            newMhCount++;
         } else {
             newLSum += customerItem.price;
+            newLCount++;
         }
         if (customerItem.isNew) {
             isNewCount++;
@@ -47,7 +51,9 @@ export const recalcSectionSum = (sectionObj: customersSectionType) => {
     });
 
     sectionObj.mhSum = newMhSum;
+    sectionObj.mhCount = newMhCount;
     sectionObj.lSum = newLSum;
+    sectionObj.lCount = newLCount;
     sectionObj.isNewCount = isNewCount;
     sectionObj.isClosedCount = isClosedCount;
     sectionObj.transferredCount = transferredCount;
@@ -93,8 +99,9 @@ export const getSalary = ({
     let isTransferredCount = 0;
     let creamCount = 0;
     let creamSum = 0;
-    const creamSells: Array<Pick<customerType, 'name' | 'id' | 'day' | 'weekday' | 'creamSells'>> = [];
-    const isNewCustomers: Array<Pick<customerType, 'name' | 'isClosed' | 'id' | 'day' | 'weekday'>> = [];
+    const creamSells: Array<salaryObjectCustomerType & Pick<customerType, 'creamSells'>> = [];
+    const isNewCustomers: Array<salaryObjectCustomerType & Pick<customerType, 'isClosed'>> = [];
+    const transferredCustomers: Array<salaryObjectCustomerType & Pick<customerType, 'transferredComment'>> = [];
 
     customersList.forEach((section) => {
         section.data.forEach(customer => {
@@ -117,6 +124,13 @@ export const getSalary = ({
             }
             if (customer.isTransferred) {
                 isTransferredCount++;
+                transferredCustomers.push({
+                    name: customer.name,
+                    id: customer.id,
+                    day: customer.day,
+                    weekday: customer.weekday,
+                    transferredComment: customer.transferredComment,
+                });
             }
             if (customer.creamSells.length) {
                 creamCount += customer.creamSells.length;
@@ -140,24 +154,31 @@ export const getSalary = ({
     const creamSalary = creamSum * CREAM_PERCENT;
 
     const totalSalary = laserSalary + multishapeSalary + transferredSalary + creamSalary;
+
     const isNewInfo = {
         isNewCount,
         isClosedCount,
         isNotClosedCount,
         customers: isNewCustomers,
     };
+
     const creamInfo = {
         creamSalary,
         creamCount,
         creamSells
     };
 
+    const transferredInfo = {
+        transferredSalary,
+        isTransferredCount,
+        transferredCustomers
+    };
+
     return {
         laserSalary,
         isNewInfo,
         multishapeSalary,
-        isTransferredCount,
-        transferredSalary,
+        transferredInfo,
         creamInfo,
         totalSalary,
     };

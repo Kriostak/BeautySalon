@@ -41,8 +41,10 @@ const CustomersList = ({
 
         if (item.type === 0) {
             customersListCopy[sectionIndex].mhSum -= item.price ?? 0;
+            customersListCopy[sectionIndex].mhCount--;
         } else {
             customersListCopy[sectionIndex].lSum -= item.price ?? 0;
+            customersListCopy[sectionIndex].lCount--;
         }
 
         // it mutate list what you pass
@@ -95,7 +97,7 @@ const CustomersList = ({
 
 
                     <View style={styles.customerInfo}>
-                        <Text style={styles.customerType}>{isMh ? t('Mh') : t('L')}</Text>
+                        <Text style={styles.customerType}>{isMh ? t('MH') : t('LE')}</Text>
                         <Pressable onPress={() => {
 
                         }}>
@@ -138,7 +140,7 @@ const CustomersList = ({
                                 <View style={styles.sectionInfo}>
                                     <View style={styles.sectionSumContainer}>
                                         <View>
-                                            <Text style={[styles.sectionText, { textAlign: 'left', marginRight: 5, }]}>{t('Nw')}:</Text>
+                                            <Text style={[styles.sectionText, { textAlign: 'left', marginRight: 5 }]}>{t('Nw')}:</Text>
                                             <Text style={[styles.sectionText, { textAlign: 'left', marginRight: 5 }]}>{t('Cl')}:</Text>
                                         </View>
                                         <View>
@@ -149,8 +151,8 @@ const CustomersList = ({
 
                                     <View style={styles.sectionSumContainer}>
                                         <View>
-                                            <Text style={[styles.sectionText, { textAlign: 'right', marginRight: 5, fontWeight: 500 }]}>{t('Mh')}:</Text>
-                                            <Text style={[styles.sectionText, { textAlign: 'right', marginRight: 5, fontWeight: 500 }]}>{t('L')}:</Text>
+                                            <Text style={[styles.sectionText, { textAlign: 'right', marginRight: 5, fontWeight: 500 }]}>{t('MH')}({section.mhCount}):</Text>
+                                            <Text style={[styles.sectionText, { textAlign: 'right', marginRight: 5, fontWeight: 500 }]}>{t('LE')}({section.lCount}):</Text>
                                         </View>
                                         <View>
                                             <Text style={[styles.sectionText, { fontWeight: 500 }]}>{currencyFormat(section.mhSum)}</Text>

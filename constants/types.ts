@@ -34,13 +34,16 @@ export type customersSectionType = {
     weekday: dayType;
     day: number;
     mhSum: number;
+    mhCount: number;
     lSum: number;
+    lCount: number;
     isNewCount: number;
     isClosedCount: number;
     transferredCount: number;
     creamsSold: number;
     data: customerType[];
 }
+export type salaryObjectCustomerType = Pick<customerType, 'name' | 'id' | 'day' | 'weekday'>;
 
 export type salaryObjectType = {
     laserSalary: number,
@@ -49,14 +52,17 @@ export type salaryObjectType = {
         isNewCount: number,
         isClosedCount: number,
         isNotClosedCount: number,
-        customers: Pick<customerType, 'name' | 'isClosed' | 'id' | 'day' | 'weekday'>[]
+        customers: (salaryObjectCustomerType & Pick<customerType, 'isClosed'>)[]
     },
-    isTransferredCount: number,
-    transferredSalary: number,
+    transferredInfo: {
+        isTransferredCount: number,
+        transferredSalary: number,
+        transferredCustomers: (salaryObjectCustomerType & Pick<customerType, 'transferredComment'>)[]
+    },
     creamInfo: {
         creamCount: number,
         creamSalary: number,
-        creamSells: Pick<customerType, 'name' | 'id' | 'day' | 'weekday' | 'creamSells'>[]
+        creamSells: (salaryObjectCustomerType & Pick<customerType, 'creamSells'>)[]
     }
     totalSalary: number,
 }

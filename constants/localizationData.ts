@@ -1,8 +1,8 @@
 
 const EN = {
     'Salary': 'Salary',
-    'Mh': 'Mh',
-    'L': 'L',
+    'MH': 'MH',
+    'LE': 'LE',
     'January': "January",
     'February': "February",
     'March': "March",
@@ -64,12 +64,13 @@ const EN = {
     'No Data': 'No Data',
     'Cream Name': 'Cream Name',
     'Summary': 'Summary',
+    'Detail': 'Detail',
 }
 
 const UA = {
     'Salary': 'Зарплатня',
-    'Mh': 'Мш',
-    'L': 'Л',
+    'MH': 'МШ',
+    'LE': 'ЛЕ',
     'January': "Січень",
     'February': "Лютий",
     'March': "Березень",
@@ -131,6 +132,7 @@ const UA = {
     'No Data': 'Немає Даних',
     'Cream Name': 'Назва Крему',
     'Summary': 'Сумма',
+    'Detail': 'Детальніше',
 };
 
 export type localizationType = typeof EN;
