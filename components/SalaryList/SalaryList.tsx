@@ -34,18 +34,18 @@ const SalaryList = ({
     const salaryListOrder:
         Record<keyof salaryObjectType, (args: any) => React.ReactElement>
         = {
-        laserSalary: (value: typeof salaryObject['laserSalary']) =>
-            <DefaultInfo label={`${t('Salary for Laser')}:`} key='laserSalary'>
-                <Text style={[styles.salaryText]}>
-                    {currencyFormat(value)}
-                </Text>
-            </DefaultInfo>,
-        multishapeSalary: (value: typeof salaryObject['multishapeSalary']) =>
-            <DefaultInfo label={`${t('Salary for Multishape')}:`} key='multishapeSalary'>
-                <Text style={[styles.salaryText]}>
-                    {currencyFormat(value)}
-                </Text>
-            </DefaultInfo>,
+        laserInfo: (value: typeof salaryObject['laserInfo']) =>
+            <DefaultInfo
+                label={`${t('Laser')}:`}
+                value={value}
+                key='laserSalary'
+            />,
+        multishapeInfo: (value: typeof salaryObject['multishapeInfo']) =>
+            <DefaultInfo
+                label={`${t('Multishape')}:`}
+                value={value}
+                key='multishapeSalary'
+            />,
         isNewInfo: (value: salaryObjectType['isNewInfo']) =>
             <IsNewInfo
                 setAdditionalInfo={setAdditionalInfo}
@@ -71,11 +71,14 @@ const SalaryList = ({
                 key='creamInfo'
             />,
         totalSalary: (value: typeof salaryObject['totalSalary']) =>
-            <DefaultInfo label={`${t('Salary')}:`} key='totalSalary' last>
+            <View style={[styles.salaryRow, { borderBottomWidth: 0 }]} key='totalSalary'>
+                <Text style={[styles.salaryText, { fontWeight: 600 }]}>
+                    {`${t('Salary')}:`}
+                </Text>
                 <Text style={[styles.salaryText, { fontWeight: 600 }]}>
                     {currencyFormat(value)}
                 </Text>
-            </DefaultInfo>,
+            </View>,
     }
 
     return (
@@ -156,6 +159,12 @@ const salaryListStyles = (themeStyles: themeStylesType) => StyleSheet.create({
         right: 15,
         top: 10,
         zIndex: 2
+    },
+    salaryRow: {
+        alignItems: 'center',
+        borderStyle: 'dashed',
+        borderColor: themeStyles.border,
+        borderBottomWidth: 1,
     },
     salaryText: {
         fontSize: 16,

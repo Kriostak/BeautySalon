@@ -41,8 +41,8 @@ const EN = {
     'Please add customer': 'Please, add customer.',
     'Please, add customer for ${selectedDate}.${selectedMonth}.': 'Please, add customer for ${selectedDate}.${selectedMonth}.',
     'Is Transferred': 'Is Transferred',
-    'Salary for Laser': 'Salary for Laser',
-    'Salary for Multishape': 'Salary for Multishape',
+    'Salary for': 'Salary for',
+    'Receipts for': 'Receipts for',
     'Newcomers': 'Newcomers',
     'Closed Newcomers': 'Closed Newcomers',
     'Transferred customers': 'Transferred customers',
@@ -65,6 +65,7 @@ const EN = {
     'Cream Name': 'Cream Name',
     'Summary': 'Summary',
     'Detail': 'Detail',
+    'Conversion': 'Conversion',
 }
 
 const UA = {
@@ -109,8 +110,8 @@ const UA = {
     'Please add customer': 'Будь ласка, додайте клієнта.',
     'Please, add customer for ${selectedDate}.${selectedMonth}.': 'Будь ласка, додайте клієнта на ${selectedDate}.${selectedMonth}.',
     'Is Transferred': 'Переведена',
-    'Salary for Laser': 'Зарплатня за Лазер',
-    'Salary for Multishape': 'Зарплатня за Мультішейп',
+    'Salary for': 'Зарплатня за',
+    'Receipts for': 'Виручка за',
     'Newcomers': 'Новенькі',
     'Closed Newcomers': 'Закриті Новенькі',
     'Transferred customers': 'Кількість Переведених',
@@ -133,6 +134,7 @@ const UA = {
     'Cream Name': 'Назва Крему',
     'Summary': 'Сумма',
     'Detail': 'Детальніше',
+    'Conversion': 'Конверсія',
 };
 
 export type localizationType = typeof EN;

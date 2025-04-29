@@ -46,12 +46,19 @@ export type customersSectionType = {
 export type salaryObjectCustomerType = Pick<customerType, 'name' | 'id' | 'day'>;
 
 export type salaryObjectType = {
-    laserSalary: number,
-    multishapeSalary: number,
+    laserInfo: {
+        salary: number,
+        receipts: number,
+    },
+    multishapeInfo: {
+        salary: number,
+        receipts: number,
+    },
     isNewInfo: {
         isNewCount: number,
         isClosedCount: number,
         isNotClosedCount: number,
+        conversionPercentage: number,
         customers: (salaryObjectCustomerType & Pick<customerType, 'isClosed'>)[]
     },
     transferredInfo: {

@@ -163,7 +163,6 @@ export const getSalary = ({
                     isClosed: customer.isClosed,
                     id: customer.id,
                     day: customer.day,
-                    weekday: customer.weekday
                 });
             }
             if (customer.isTransferred) {
@@ -172,7 +171,6 @@ export const getSalary = ({
                     name: customer.name,
                     id: customer.id,
                     day: customer.day,
-                    weekday: customer.weekday,
                     transferredComment: customer.transferredComment,
                 });
             }
@@ -183,7 +181,6 @@ export const getSalary = ({
                     name: customer.name,
                     id: customer.id,
                     day: customer.day,
-                    weekday: customer.weekday,
                     creamSells: customer.creamSells
                 })
             }
@@ -191,25 +188,30 @@ export const getSalary = ({
     });
 
     const multishapePercentage = isNewCount ? (isClosedCount * 100) / isNewCount : 0;
+    const conversionPercentage = getMultishapePercent(multishapePercentage);
 
     const laserSalary = totalLSum * LASER_PERCENT;
-    const multishapeSalary = totalMhSum * getMultishapePercent(multishapePercentage);
+    const multishapeSalary = totalMhSum * conversionPercentage;
     const transferredSalary = isTransferredCount * TRANSFERRED_PERCENT;
     const creamSalary = creamSum * CREAM_PERCENT;
 
     const totalSalary = laserSalary + multishapeSalary + transferredSalary + creamSalary;
 
+    const laserInfo = {
+        salary: laserSalary,
+        receipts: totalLSum
+    };
+    const multishapeInfo = {
+        salary: multishapeSalary,
+        receipts: totalMhSum
+    }
+
     const isNewInfo = {
         isNewCount,
         isClosedCount,
         isNotClosedCount,
+        conversionPercentage,
         customers: isNewCustomers,
-    };
-
-    const creamInfo = {
-        creamSalary,
-        creamCount,
-        creamSells
     };
 
     const transferredInfo = {
@@ -218,10 +220,16 @@ export const getSalary = ({
         transferredCustomers
     };
 
+    const creamInfo = {
+        creamSalary,
+        creamCount,
+        creamSells
+    };
+
     return {
-        laserSalary,
+        laserInfo,
+        multishapeInfo,
         isNewInfo,
-        multishapeSalary,
         transferredInfo,
         creamInfo,
         totalSalary,
