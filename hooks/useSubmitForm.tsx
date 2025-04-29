@@ -3,7 +3,7 @@ import { useContext } from 'react';
 import { StoreContext } from '@/context/StoreContext';
 import { customerType, creamValType, customersSectionType } from "@/constants/types";
 
-import { removeCustomerFromList, recalcSectionSum } from '@/utils/utils';
+import { removeCustomerFromList, recalcSectionSum, increaseDecreaseSectionHeader } from '@/utils/utils';
 
 type Props = {
     formElements: customerType,
@@ -101,15 +101,13 @@ const useSubmitForm = ({
                         const oldSectionIndex = customersListCopy?.findIndex(section => section.day === customer?.day);
                         const oldCustomerIndex = customersListCopy[oldSectionIndex].data.findIndex(customerItem => customerItem.id === customer?.id);
                         const oldCustomerItem = customersListCopy[oldSectionIndex].data[oldCustomerIndex];
-                        const oldIsMh = oldCustomerItem.type === 0;
 
-                        if (oldIsMh) {
-                            customersListCopy[oldSectionIndex].mhSum -= oldCustomerItem.price;
-                            customersListCopy[oldSectionIndex].mhCount--;
-                        } else {
-                            customersListCopy[oldSectionIndex].lSum -= oldCustomerItem.price;
-                            customersListCopy[oldSectionIndex].lCount--;
-                        }
+                        // it mutate list what you pass
+                        increaseDecreaseSectionHeader({
+                            sectionHeader: customersListCopy[oldSectionIndex],
+                            data: oldCustomerItem,
+                            isIncrease: false,
+                        });
 
                         // it mutate list what you pass
                         removeCustomerFromList({
@@ -132,13 +130,13 @@ const useSubmitForm = ({
                 }
                 // adding new customer to existing section
                 else {
-                    if (isMh) {
-                        sectionObj.mhSum += formElements.price;
-                        sectionObj.mhCount++;
-                    } else {
-                        sectionObj.lSum += formElements.price;
-                        sectionObj.lCount++;
-                    }
+                    // it mutate list what you pass
+                    increaseDecreaseSectionHeader({
+                        sectionHeader: sectionObj,
+                        data: formElements,
+                        isIncrease: true,
+                    });
+
                     sectionObj.data.unshift(formElements);
                 }
             }

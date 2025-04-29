@@ -10,7 +10,7 @@ import useTheme from "@/hooks/useTheme";
 import { getSalary } from "@/utils/utils";
 import { deleteStoreData } from "@/actions/AsyncStorage";
 
-import SalaryList from "@/components/SalaryList";
+import SalaryList from "@/components/SalaryList/SalaryList";
 import Calendar from "@/components/Calendar";
 import Confirm from "@/components/Confirm";
 

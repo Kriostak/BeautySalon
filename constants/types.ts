@@ -43,7 +43,7 @@ export type customersSectionType = {
     creamsSold: number;
     data: customerType[];
 }
-export type salaryObjectCustomerType = Pick<customerType, 'name' | 'id' | 'day' | 'weekday'>;
+export type salaryObjectCustomerType = Pick<customerType, 'name' | 'id' | 'day'>;
 
 export type salaryObjectType = {
     laserSalary: number,

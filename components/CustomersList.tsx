@@ -3,7 +3,7 @@ import { View, Text, SectionList, Pressable, StyleSheet } from "react-native";
 import Octicons from '@expo/vector-icons/Octicons';
 
 import { customersSectionType, customerType, themeStylesType } from "@/constants/types";
-import { removeCustomerFromList, currencyFormat } from "@/utils/utils";
+import { removeCustomerFromList, currencyFormat, increaseDecreaseSectionHeader } from "@/utils/utils";
 import useTranslate from "@/hooks/useTranslate";
 import { monthsList } from "@/constants/constants";
 import useTheme from "@/hooks/useTheme";
@@ -39,13 +39,12 @@ const CustomersList = ({
             return sectionItem.day === section.day && sectionItem.weekday === section.weekday
         });
 
-        if (item.type === 0) {
-            customersListCopy[sectionIndex].mhSum -= item.price ?? 0;
-            customersListCopy[sectionIndex].mhCount--;
-        } else {
-            customersListCopy[sectionIndex].lSum -= item.price ?? 0;
-            customersListCopy[sectionIndex].lCount--;
-        }
+        // it mutate list what you pass
+        increaseDecreaseSectionHeader({
+            sectionHeader: customersListCopy[sectionIndex],
+            data: item,
+            isIncrease: false,
+        });
 
         // it mutate list what you pass
         removeCustomerFromList({

@@ -17,47 +17,91 @@ export const removeCustomerFromList = ({
     }
 };
 
+export const increaseDecreaseSectionHeader = (
+    { sectionHeader, data, isIncrease }: {
+        sectionHeader: customersSectionType,
+        data: customerType,
+        isIncrease: boolean,
+    }) => {
+    if (isIncrease) {
+        if (data.type === 0) {
+            sectionHeader.mhSum += data.price;
+            sectionHeader.mhCount++;
+        } else {
+            sectionHeader.lSum += data.price;
+            sectionHeader.lCount++;
+        }
+
+        if (data.isNew) {
+            sectionHeader.isNewCount++;
+            if (data.isClosed) {
+                sectionHeader.isClosedCount++;
+            }
+        }
+
+        if (data.creamSells.length) {
+            sectionHeader.creamsSold += data.creamSells.length;
+        }
+
+        if (data.isTransferred) {
+            sectionHeader.transferredCount++;
+        }
+    } else {
+        if (data.type === 0) {
+            sectionHeader.mhSum -= data.price ?? 0;
+            sectionHeader.mhCount--;
+        } else {
+            sectionHeader.lSum -= data.price ?? 0;
+            sectionHeader.lCount--;
+        }
+
+        if (data.isNew) {
+            sectionHeader.isNewCount--;
+            if (data.isClosed) {
+                sectionHeader.isClosedCount--;
+            }
+        }
+
+        if (data.creamSells.length) {
+            sectionHeader.creamsSold -= data.creamSells.length;
+        }
+
+        if (data.isTransferred) {
+            sectionHeader.transferredCount--;
+        }
+    }
+};
+
 // mutate sectionObj what you pass
 export const recalcSectionSum = (sectionObj: customersSectionType) => {
-    let newMhSum = 0;
-    let newMhCount = 0;
-    let newLSum = 0;
-    let newLCount = 0;
-    let isNewCount = 0;
-    let isClosedCount = 0;
-    let transferredCount = 0;
-    let creamsSold = 0;
+    const fakeSectionObj: customersSectionType = {
+        ...sectionObj,
+        mhSum: 0,
+        mhCount: 0,
+        lSum: 0,
+        lCount: 0,
+        isNewCount: 0,
+        isClosedCount: 0,
+        transferredCount: 0,
+        creamsSold: 0,
+    };
 
     sectionObj.data.forEach(customerItem => {
-        if (customerItem.type === 0) {
-            newMhSum += customerItem.price;
-            newMhCount++;
-        } else {
-            newLSum += customerItem.price;
-            newLCount++;
-        }
-        if (customerItem.isNew) {
-            isNewCount++;
-        }
-        if (customerItem.isClosed) {
-            isClosedCount++;
-        }
-        if (customerItem.isTransferred) {
-            transferredCount++;
-        }
-        if (customerItem.creamSells.length > 0) {
-            creamsSold++;
-        }
+        increaseDecreaseSectionHeader({
+            sectionHeader: fakeSectionObj,
+            data: customerItem,
+            isIncrease: true,
+        });
     });
 
-    sectionObj.mhSum = newMhSum;
-    sectionObj.mhCount = newMhCount;
-    sectionObj.lSum = newLSum;
-    sectionObj.lCount = newLCount;
-    sectionObj.isNewCount = isNewCount;
-    sectionObj.isClosedCount = isClosedCount;
-    sectionObj.transferredCount = transferredCount;
-    sectionObj.creamsSold = creamsSold;
+    sectionObj.mhSum = fakeSectionObj.mhSum;
+    sectionObj.mhCount = fakeSectionObj.mhCount;
+    sectionObj.lSum = fakeSectionObj.lSum;
+    sectionObj.lCount = fakeSectionObj.lCount;
+    sectionObj.isNewCount = fakeSectionObj.isNewCount;
+    sectionObj.isClosedCount = fakeSectionObj.isClosedCount;
+    sectionObj.transferredCount = fakeSectionObj.transferredCount;
+    sectionObj.creamsSold = fakeSectionObj.creamsSold;
 }
 
 export const currencyFormat = (num: number): string => {
