@@ -58,7 +58,7 @@ export type salaryObjectType = {
         isNewCount: number,
         isClosedCount: number,
         isNotClosedCount: number,
-        conversionPercentage: number,
+        multishapePercentage: number,
         customers: (salaryObjectCustomerType & Pick<customerType, 'isClosed'>)[]
     },
     transferredInfo: {

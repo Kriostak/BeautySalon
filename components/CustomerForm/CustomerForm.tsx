@@ -14,6 +14,7 @@ import CreamFields from './CustomerFormFields/CreamFields';
 import IsNewCheckboxes from './CustomerFormFields/IsNewCheckboxes';
 import IsTransferredField from './CustomerFormFields/IsTransferedField';
 import useSubmitForm from '@/hooks/useSubmitForm';
+import genericStyles from "@/styles/generic.module";
 
 type Props = {
     formOpen: boolean;
@@ -28,7 +29,6 @@ const CustomerForm = (
         setStoreCustomersList,
     }: Props): React.ReactElement => {
     const {
-        customersList,
         customer,
         selectedYear,
         selectedMonth,
@@ -90,11 +90,12 @@ const CustomerForm = (
     }
 
     const styles = formStyles(themeStyles);
+    const appStyles = genericStyles(themeStyles);
 
     return (
         <Modal animationType="slide" transparent={true} visible={formOpen}>
-            <View style={styles.container}>
-                <View style={styles.closeIcon}>
+            <View style={appStyles.modal}>
+                <View style={appStyles.closeIcon}>
                     <Pressable onPress={() => {
                         setFormOpen(false);
                     }}>
@@ -181,40 +182,12 @@ const CustomerForm = (
 };
 
 const formStyles = (themeStyles: themeStylesType) => StyleSheet.create({
-    container: {
-        width: '90%',
-        maxWidth: 1000,
-        backgroundColor: themeStyles.backgroundModal,
-        borderRadius: 18,
-        position: 'absolute',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        paddingHorizontal: 10,
-        paddingVertical: 10,
-        shadowColor: "#000",
-        shadowOffset: {
-            width: 0,
-            height: 7,
-        },
-        shadowOpacity: 0.41,
-        shadowRadius: 9.11,
-        elevation: 14,
-        borderWidth: 1,
-        borderColor: themeStyles.border,
-    },
     title: {
         textAlign: 'center',
         fontSize: 20,
         fontWeight: '500',
         zIndex: 1,
         color: themeStyles.color
-    },
-    closeIcon: {
-        position: 'absolute',
-        right: 15,
-        top: 10,
-        zIndex: 2
     },
     formItem: {
         paddingVertical: 15

@@ -210,7 +210,7 @@ export const getSalary = ({
         isNewCount,
         isClosedCount,
         isNotClosedCount,
-        conversionPercentage,
+        multishapePercentage,
         customers: isNewCustomers,
     };
 

@@ -1,12 +1,12 @@
-import { useContext, useState } from 'react';
+import { useState } from 'react';
 import { render, screen, userEvent, waitFor } from '@testing-library/react-native';
 
-import StoreProvider, { initialValues, StoreContext } from '@/context/StoreContext';
+import StoreProvider, { initialValues } from '@/context/StoreContext';
 import { monthsList, shortWeekDaysList } from '@/constants/constants';
 import localizationData, { localizationType } from '@/constants/localizationData';
 import { getCurrentMonthDaysCount } from '@/utils/utils';
 
-import Calendar from '../Calendar';
+import Calendar from '@/components/Calendar';
 
 const testYear = 2025;
 const testMonth = 3;

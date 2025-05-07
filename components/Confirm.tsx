@@ -5,6 +5,7 @@ import Octicons from '@expo/vector-icons/Octicons';
 import useTranslate from "@/hooks/useTranslate";
 import useTheme from '@/hooks/useTheme';
 import { themeStylesType } from "@/constants/types";
+import genericStyles from "@/styles/generic.module";
 
 type Props = {
     confirmOpen: boolean;
@@ -18,11 +19,12 @@ const Confirm = ({ confirmOpen, setConfirmOpen, confirmText, confirmCallback }: 
     const { themeStyles } = useTheme();
 
     const styles = confirmStyles(themeStyles);
+    const appStyles = genericStyles(themeStyles);
 
     return (
         <Modal animationType="slide" transparent={true} visible={confirmOpen}>
-            <View style={styles.container}>
-                <View style={styles.closeIcon}>
+            <View style={appStyles.modal}>
+                <View style={appStyles.closeIcon}>
                     <Pressable onPress={() => {
                         setConfirmOpen(false);
                     }}>
@@ -50,34 +52,6 @@ const Confirm = ({ confirmOpen, setConfirmOpen, confirmText, confirmCallback }: 
 };
 
 const confirmStyles = (themeStyles: themeStylesType) => StyleSheet.create({
-    container: {
-        width: '90%',
-        maxWidth: 1000,
-        backgroundColor: themeStyles.backgroundModal,
-        borderRadius: 18,
-        position: 'absolute',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        paddingHorizontal: 10,
-        paddingVertical: 10,
-        shadowColor: "#000",
-        shadowOffset: {
-            width: 0,
-            height: 7,
-        },
-        shadowOpacity: 0.41,
-        shadowRadius: 9.11,
-        elevation: 14,
-        borderWidth: 1,
-        borderColor: themeStyles.border,
-    },
-    closeIcon: {
-        position: 'absolute',
-        right: 15,
-        top: 10,
-        zIndex: 2
-    },
     text: {
         color: themeStyles.color,
         textAlign: 'center',

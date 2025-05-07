@@ -68,7 +68,7 @@ const IsNewInfo = ({
             </View>
             <View style={[styles.row, { flex: 1, justifyContent: 'center', gap: 5 }]}>
                 <Text style={[styles.salaryText, { fontWeight: 500 }]}>{`${t('Conversion')}:`}</Text>
-                <Text style={[styles.salaryText, { fontWeight: 500 }]}>{`${value.conversionPercentage * 100}%`}</Text>
+                <Text style={[styles.salaryText, { fontWeight: 500 }]}>{`${value.multishapePercentage}%`}</Text>
             </View>
             <Pressable onPress={() => {
                 setShowAdditionalInfo(true);

@@ -8,9 +8,14 @@
       "developmentClient": true,
       "distribution": "internal"
     },
-    "preview": {
+    "previewAndroid": {
       "android": {
         "buildType": "apk"
+      }
+    },
+    "previewIos": {
+      "ios": {
+        "simulator": true
       }
     },
     "production": {

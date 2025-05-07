@@ -10,6 +10,7 @@ import useTranslate from "@/hooks/useTranslate";
 import useTheme from "@/hooks/useTheme";
 import { StoreContext } from "@/context/StoreContext";
 import { getCurrentMonthDaysCount } from "@/utils/utils";
+import genericStyles from "@/styles/generic.module";
 
 type Props = {
     calendarOpen: boolean,
@@ -73,11 +74,12 @@ const Calendar = ({
     const daysWithData = calendarCustomersList?.map(day => day.day);
 
     const styles = calendarStyles(themeStyles);
+    const appStyles = genericStyles(themeStyles);
 
     return (
         <Modal animationType="slide" transparent={true} visible={calendarOpen}>
-            <View style={styles.calendarContainer}>
-                <View style={styles.closeIcon}>
+            <View style={[appStyles.modal, styles.calendarModal]}>
+                <View style={appStyles.closeIcon}>
                     <Pressable testID="closeCalendar" onPress={() => {
                         setCalendarOpen(false);
                     }}>
@@ -172,33 +174,9 @@ const Calendar = ({
 };
 
 const calendarStyles = (themeStyles: themeStylesType) => StyleSheet.create({
-    calendarContainer: {
-        width: '95%',
-        maxWidth: 1000,
-        backgroundColor: themeStyles.backgroundModal,
-        borderRadius: 18,
-        position: 'absolute',
+    calendarModal: {
         top: 150,
-        left: '50%',
         transform: 'translate(-50%, 0)',
-        paddingHorizontal: 10,
-        paddingVertical: 10,
-        shadowColor: "#000",
-        shadowOffset: {
-            width: 0,
-            height: 7,
-        },
-        shadowOpacity: 0.41,
-        shadowRadius: 9.11,
-        elevation: 14,
-        borderWidth: 1,
-        borderColor: themeStyles.border,
-    },
-    closeIcon: {
-        position: 'absolute',
-        right: 15,
-        top: 10,
-        zIndex: 2
     },
     calendarHeader: {
         paddingBottom: 15,
