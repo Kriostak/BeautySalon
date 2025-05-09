@@ -21,17 +21,19 @@ const CustomerListFooter = ({
     const styles = footerStyles(themeStyles);
 
     return (
-        <View style={styles.customerListFooter}>
+        <View style={styles.customerListFooter} testID="customerListFooter">
 
             <Pressable
                 onPress={() => dispatch({ type: 'switchLocalization' })}
-                style={styles.footerButton}>
+                style={styles.footerButton}
+                testID="switchLocalizationButton">
                 <Text style={{ color: themeStyles.color }}>{lang === 'UA' ? 'EN' : 'UA'}</Text>
             </Pressable>
 
             <Pressable
                 onPress={() => dispatch({ type: 'switchTheme' })}
-                style={styles.footerButton}>
+                style={styles.footerButton}
+                testID="switchThemeButton">
                 <Octicons name={theme === 'light' ? 'moon' : 'sun'} size={20} style={{ color: themeStyles.color }} />
             </Pressable>
 
@@ -39,7 +41,7 @@ const CustomerListFooter = ({
             <Pressable
                 onPress={() => setShowOnlyDay(!showOnlyDay)}
                 style={styles.footerButton}
-            >
+                testID="showOnlyDayButton">
                 <Octicons name={showOnlyDay ? 'fold-down' : 'fold'} size={20} style={{ color: themeStyles.color }} />
             </Pressable>
         </View>

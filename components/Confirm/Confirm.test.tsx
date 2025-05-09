@@ -1,6 +1,6 @@
 import { render, screen, userEvent, waitFor } from '@testing-library/react-native';
 
-import Confirm from "@/components/Confirm";
+import Confirm from "@/components/Confirm/Confirm";
 
 jest.mock('@expo/vector-icons/Octicons');
 jest.mock('expo-font');

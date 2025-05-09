@@ -6,7 +6,7 @@ import { monthsList, shortWeekDaysList } from '@/constants/constants';
 import localizationData, { localizationType } from '@/constants/localizationData';
 import { getCurrentMonthDaysCount } from '@/utils/utils';
 
-import Calendar from '@/components/Calendar';
+import Calendar from '@/components/Calendar/Calendar';
 
 const testYear = 2025;
 const testMonth = 3;

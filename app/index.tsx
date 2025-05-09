@@ -9,9 +9,9 @@ import { customersSectionType } from "@/constants/types";
 
 import { setStoreData } from "@/actions/AsyncStorage";
 
-import CustomerListHeader from "@/components/CustomerListHeader";
-import CustomersList from "@/components/CustomersList";
-import CustomerListFooter from "@/components/CustomerListFooter";
+import CustomerListHeader from "@/components/CustomerListHeader/CustomerListHeader";
+import CustomersList from "@/components/CustomersList/CustomersList";
+import CustomerListFooter from "@/components/CustomerListFooter/CustomerListFooter";
 import CustomerForm from "@/components/CustomerForm/CustomerForm";
 
 import { StoreContext } from "@/context/StoreContext";

@@ -1,7 +1,7 @@
 import { Stack } from "expo-router";
 
 import StoreProvider from "@/context/StoreContext";
-import NativeBars from "@/components/NativeBars";
+import NativeBars from "@/components/NativeBars/NativeBars";
 
 export default function RootLayout() {
 

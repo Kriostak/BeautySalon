@@ -11,8 +11,8 @@ import { getSalary } from "@/utils/utils";
 import { deleteStoreData } from "@/actions/AsyncStorage";
 
 import SalaryList from "@/components/SalaryList/SalaryList";
-import Calendar from "@/components/Calendar";
-import Confirm from "@/components/Confirm";
+import Calendar from "@/components/Calendar/Calendar";
+import Confirm from "@/components/Confirm/Confirm";
 
 type Props = {
     setFormOpen: (isOpen: boolean) => void;
